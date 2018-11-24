@@ -1,6 +1,6 @@
 from worker_base import WorkerBase
-from obst_avoid import CostGridPopulator
-from obst_avoid import CostGridSolver
+from obst_avoid.manipulators import CostGridPopulator
+from obst_avoid.manipulators import CostGridSolver
 
 import rospy
 from std_msgs.msg import Empty

@@ -1,6 +1,6 @@
-from obst_avoid import Obstacle
-from obst_avoid import CostGrid
-from obst_avoid import Trajectory
+from obst_avoid.containers import Obstacle
+from obst_avoid.containers import CostGrid
+from obst_avoid.containers import Trajectory
 
 
 class CostGridSolver:

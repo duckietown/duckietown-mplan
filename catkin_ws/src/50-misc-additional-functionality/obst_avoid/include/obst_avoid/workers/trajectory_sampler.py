@@ -1,12 +1,15 @@
-import ManipulatorBase
+from worker_base import WorkerBase
+
+import rospy
+from std_msgs.msg import Empty
 
 
-class TrajectorySampler(ManipulatorBase):
+class TrajectorySampler(WorkerBase):
     """
     The trajectory sampler. It gets a trajectory and samples it at the current
     time point. From this sample it then calculates the kinematic commands which
     can be passed on to the drive controller.
-
+trajectory_sampler
     Parameters
     ----------
     trajectory: Trajectory
@@ -47,7 +50,7 @@ class TrajectorySampler(ManipulatorBase):
 
     def initIO(self):
         """
-        Instantiate all input / output behaviour of manipulator. This mainly
+        Instantiate all input / output behaviour of worker. This mainly
         includes ros-publishers / -subscribers and advertised services.
 
         Parameters
@@ -60,11 +63,15 @@ class TrajectorySampler(ManipulatorBase):
         """
         # TODO
         self.trajectory_sub = rospy.Subscriber(
-            'topic_name', topic_type, callbackMethod)
+            'obst_avoid/trajectory', Empty, self.trajectoryCb)
 
         # TODO
         self.command_pub = rospy.Publisher(
-            'topic_name', topic_type, queue_size=10)
+            'default_topic_name', Empty, queue_size=10)
+
+    def trajectoryCb(self, data):
+        # TODO add proper saving of trajectory
+        self.trajectory = []
 
     def advance(self, Ts=1.0):
         """
@@ -83,7 +90,7 @@ class TrajectorySampler(ManipulatorBase):
         none
         """
 
-        command_msg = None  # TODO, add code here
+        command_msg = Empty()  # TODO, add proper message and populate it
         self.command_pub.publish(command_msg)
 
     def shutdown(self):

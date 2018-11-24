@@ -1,5 +1,5 @@
-import numpy as np
 import rospy
+from std_msgs.msg import Empty
 
 
 class Trajectory:
@@ -100,7 +100,7 @@ class Trajectory:
         # TODO
         pass
 
-    def toMsg():
+    def toMsg(self):
         """
         convert the instance to a ros message which can be published
 
@@ -115,4 +115,5 @@ class Trajectory:
             class
         """
         # TODO
-        pass
+        empty_msg = Empty()
+        return empty_msg

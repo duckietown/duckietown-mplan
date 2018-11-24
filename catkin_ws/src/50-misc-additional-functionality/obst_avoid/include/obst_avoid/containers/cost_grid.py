@@ -44,7 +44,7 @@ class CostGrid:
     def __del__(self):
         pass
 
-    def isPopulated():
+    def isPopulated(self):
         return self.populated
 
     def getCost(x, y):

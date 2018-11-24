@@ -1,6 +1,6 @@
-import obstacle
-import cost_grid
-import trajectory
+from obst_avoid import Obstacle
+from obst_avoid import CostGrid
+from obst_avoid import Trajectory
 
 
 class CostGridSolver:
@@ -12,7 +12,7 @@ class CostGridSolver:
     def __del__(self):
         pass
 
-    def solve(cost_grid):
+    def solve(self, cost_grid, actor_position):
         """
         Find the optimal path through the cost grid and save the path in a
         trajectory

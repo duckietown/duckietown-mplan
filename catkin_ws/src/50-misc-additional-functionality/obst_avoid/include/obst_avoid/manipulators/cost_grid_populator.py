@@ -1,5 +1,5 @@
-import obstacle
-import cost_grid
+from obst_avoid import Obstacle
+from obst_avoid import CostGrid
 
 
 class CostGridPopulator:
@@ -11,7 +11,7 @@ class CostGridPopulator:
     def __del__(self):
         pass
 
-    def populate(actor_position, list_of_obstacles):
+    def populate(self, actor_position, list_of_obstacles):
         """
         Create a cost grid and populate it according to the obstacles
 

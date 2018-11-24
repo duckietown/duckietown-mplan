@@ -1,9 +1,12 @@
-import ManipulatorBase
-import CostGridPopulator
-import CostGridSolver
+from worker_base import WorkerBase
+from obst_avoid import CostGridPopulator
+from obst_avoid import CostGridSolver
+
+import rospy
+from std_msgs.msg import Empty
 
 
-class TrajectoryCreator(ManipulatorBase):
+class TrajectoryCreator(WorkerBase):
     """
     The trajectory creator. It gets a list of obstacles and the pose of the
     actor duckiebot. From this it first populates the cost grid and the solves
@@ -13,10 +16,10 @@ class TrajectoryCreator(ManipulatorBase):
     Parameters
     ----------
     cost_grid_populator: CostGridPopulator
-        The manipulator used to populate a cost grid
+        The worker used to populate a cost grid
 
     cost_grid_solver: CostGridSolver
-        The manipulator used to obtain a trajectory from a cost grid
+        The worker used to obtain a trajectory from a cost grid
 
     actor: Obstacle
         obstacle object misused for saving the pose, twist and collision-
@@ -61,7 +64,7 @@ class TrajectoryCreator(ManipulatorBase):
 
     def initIO(self):
         """
-        Instantiate all input / output behaviour of manipulator. This mainly
+        Instantiate all input / output behaviour of worker. This mainly
         includes ros-publishers / -subscribers and advertised services.
 
         Parameters
@@ -74,15 +77,23 @@ class TrajectoryCreator(ManipulatorBase):
         """
         # TODO add callback and make the subscriber save to self.actor
         self.actor_sub = rospy.Subscriber(
-            'topic_name', topic_type, callbackMethod)
+            'default_topic_name', Empty, self.actorCb)
 
         # TODO add callback and make the subscriber save to self.obstacle_list
         self.obstacle_sub = rospy.Subscriber(
-            'topic_name', topic_type, callbackMethod)
+            'default_topic_name', Empty, self.obstacleCb)
 
         # TODO add topic name, type etc
         self.trajectory_pub = rospy.Publisher(
-            'topic_name', topic_type, queue_size=10)
+            'obst_avoid/trajectory', Empty, queue_size=10)
+
+    def actorCb(self, data):
+        # TODO add proper saving of actor state
+        self.actor = []
+
+    def obstacleCb(self, data):
+        # TODO add proper saving of obstacle state list
+        self.obstacle_list = []
 
     def advance(self, Ts=1.0):
         """
@@ -107,10 +118,10 @@ class TrajectoryCreator(ManipulatorBase):
         trajectory = self.cost_grid_solver.solve(cost_grid, self.actor)
 
         # convert the trajectory to a msg
-        trajectory_msg = trajectory.to_msg()
+        trajectory_msg = trajectory.toMsg()
 
         # publish trajectory msg
-        self.command_pub.publish(trajectory_msg)
+        self.trajectory_pub.publish(trajectory_msg)
 
     def shutdown(self):
         """

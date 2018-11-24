@@ -1,12 +1,14 @@
+#!/usr/bin/env python
+
 import rospy
-import trajectory_creator
+from obst_avoid import TrajectoryCreator
 
 
 def main():
     rospy.init_node('trajectory_creator_node', anonymous=False)
 
     # instantiate trajectory creator at max frequency
-    trajectory_creator = TrajectoryCreator(-1, standalone=True)
+    trajectory_creator = TrajectoryCreator(standalone=True, frequency=-1)
 
 
 if __name__ == '__main__':

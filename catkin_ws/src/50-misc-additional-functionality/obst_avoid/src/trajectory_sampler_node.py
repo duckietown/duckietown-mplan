@@ -1,12 +1,14 @@
+#!/usr/bin/env python
+
 import rospy
-import trajectory_sampler
+from obst_avoid import TrajectorySampler
 
 
 def main():
     rospy.init_node('trajectory_sampler_node', anonymous=False)
 
     # instantiate standalone trajectory sampler with 10 hz
-    trajectory_sampler = TrajectorySampler(10, standalone=True)
+    trajectory_sampler = TrajectorySampler(standalone=True, frequency=10)
 
 
 if __name__ == '__main__':

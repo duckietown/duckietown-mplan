@@ -2,16 +2,16 @@ import abc
 import rospy
 
 
-class ManipulatorBase(object):
-    __metaclass__ = abc.ABCMeta
+class WorkerBase(object):
     """
-    Generic manipulator object which should be instantiated in a node. It should
-    be designe such that only one manipulator per node is needed.
+    Generic worker object which should be instantiated in a node. It should
+    be designe such that only one worker per node is needed.
 
     If in standalone mode the node will automatically call the advance function
     with the given frequency, else the user has to be concerned to call the
     advance method when desired.
     """
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, standalone=True, frequency=-1):
         """
@@ -20,9 +20,9 @@ class ManipulatorBase(object):
 
         Parameters
         ----------
-        standalone : bool
-            Whether the manipulator is running standalone or not.
-        frequency : int
+        standalone : bool, optional
+            Whether the worker is running standalone or not.
+        frequency : int, optional
             The frequency of the advance method if called in standalone mode.
 
         Returns
@@ -35,7 +35,7 @@ class ManipulatorBase(object):
         self.init()
         self.initIO()
 
-        # if in standalone mode manipulator automatically starts its main loop
+        # if in standalone mode worker automatically starts its main loop
         if self.standalone:
             self.startup()
 
@@ -70,8 +70,8 @@ class ManipulatorBase(object):
 
     @abc.abstractmethod
     def initIO(self):
-    """
-        Instantiate all input / output behaviour of manipulator. This mainly
+        """
+        Instantiate all input / output behaviour of worker. This mainly
         includes ros-publishers / -subscribers and advertised services.
         To be implemented in derived class.
 
@@ -83,8 +83,7 @@ class ManipulatorBase(object):
         -------
         none
         """
-
-    pass
+        pass
 
     def startup(self):
         """
@@ -115,7 +114,7 @@ class ManipulatorBase(object):
         none
         """
         assert self.frequency >= -1
-        double last = ros.Time.now()
+        last = rospy.Time.now()
 
         # if frequency = -1 run at max speed
         if self.frequency == -1:
@@ -123,17 +122,18 @@ class ManipulatorBase(object):
                 now = rospy.Time.now()
                 Ts = (now - last).to_sec()
                 last = now
-                advance(Ts)
+                self.advance(Ts)
         else:
             r = rospy.Rate(self.frequency)
             while not rospy.is_shutdown():
                 now = rospy.Time.now()
                 Ts = (now - last).to_sec()
                 last = now
-                advance(Ts)
+                self.advance(Ts)
+                r.sleep()
 
     @abc.abstractmethod
-    def advance(self, Ts=1.0: dobule) -> void:
+    def advance(self, Ts=1.0):
         """
         Main method where data is processed and output generated. Gets called
         once in every loop with frequency self.frequency. To be implemented in

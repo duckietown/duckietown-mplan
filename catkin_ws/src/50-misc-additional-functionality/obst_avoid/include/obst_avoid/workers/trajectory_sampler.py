@@ -129,7 +129,7 @@ class TrajectorySampler(WorkerBase):
         x_act, y_act, x_act_dot, y_act_dot = self.actor.getState()
 
         # velocity needed to reach target positon within target_time
-        vel_set = [self.k_vel * math.sqrt((x_set - x_act)**2 + (y_set - y_act)**2) / self.target_time, self.vel_max]
+        vel_set = self.k_vel * math.sqrt((x_set - x_act)**2 + (y_set - y_act)**2) / self.target_time
 
         # angular error and distance to line between trajectory position and target position
         if(x_set == x_set_now and y_set == y_set_now):
@@ -159,13 +159,13 @@ class TrajectorySampler(WorkerBase):
         self.err = err
         self.int = self.int + err
 
-        omega_set = [C_P + C_I + C_D, self.omega_max]
+        omega_set = C_P + C_I + C_D
 
         #publish
         command_msg = dtmsg.Twist2DStamped()  # TODO, add proper message and populate it
         command_msg.header.stamp = rospy.Time.now()
-        command_msg.v = min(vel_set) # either calculated value or vel_max is published
-        command_msg.omega = min(omega_set) # either calculated value or omega_max is published
+        command_msg.v = min([vel_set, self.vel_max]) # either calculated value or vel_max is published
+        command_msg.omega = min([omega_set, self.omega_max]) # either calculated value or omega_max is published
         self.command_pub.publish(command_msg)
 
     def shutdown(self):

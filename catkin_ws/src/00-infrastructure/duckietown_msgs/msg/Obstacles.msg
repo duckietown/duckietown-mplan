@@ -1,0 +1,1 @@
+MovingObject[] moving_objects

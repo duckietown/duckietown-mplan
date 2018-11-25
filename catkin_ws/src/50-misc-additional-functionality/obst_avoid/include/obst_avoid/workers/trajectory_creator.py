@@ -1,9 +1,12 @@
 from worker_base import WorkerBase
 from obst_avoid.manipulators import CostGridPopulator
 from obst_avoid.manipulators import CostGridSolver
+from obst_avoid.containers import Obstacle
+from obst_avoid.containers import Trajectory
 
 import rospy
 from std_msgs.msg import Empty
+import duckietown_msgs.msg as dtmsg
 
 
 class TrajectoryCreator(WorkerBase):
@@ -36,6 +39,8 @@ class TrajectoryCreator(WorkerBase):
         cleaning and shutting down in shutdown method.
         """
         super(TrajectoryCreator, self).__init__(standalone, frequency)
+        rospy.loginfo('[TrajectoryCreator.__init__] init complete')
+
 
     def __del__(self):
         """
@@ -59,7 +64,7 @@ class TrajectoryCreator(WorkerBase):
         """
         self.cost_grid_populator = CostGridPopulator()
         self.cost_grid_solver = CostGridSolver()
-        self.actor = []
+        self.actor = Obstacle()
         self.obstacle_list = []
 
     def initIO(self):
@@ -77,23 +82,25 @@ class TrajectoryCreator(WorkerBase):
         """
         # TODO add callback and make the subscriber save to self.actor
         self.actor_sub = rospy.Subscriber(
-            'default_topic_name', Empty, self.actorCb)
+            'obst_avoid/actor', dtmsg.Obstacles, self.actorCb)
 
         # TODO add callback and make the subscriber save to self.obstacle_list
         self.obstacle_sub = rospy.Subscriber(
-            'default_topic_name', Empty, self.obstacleCb)
+            'obst_avoid/obstacles', dtmsg.Actor, self.obstacleCb)
 
         # TODO add topic name, type etc
         self.trajectory_pub = rospy.Publisher(
-            'obst_avoid/trajectory', Empty, queue_size=10)
+            'obst_avoid/trajectory', dtmsg.TimedPath, queue_size=10)
 
     def actorCb(self, data):
-        # TODO add proper saving of actor state
-        self.actor = []
+        self.actor.fromMsg(data)
 
     def obstacleCb(self, data):
-        # TODO add proper saving of obstacle state list
         self.obstacle_list = []
+        for i, obstacle in enumerate(data.moving_objects):
+            new_obstacle = dtmsg.Obstacle()
+            new_obstacle.fromMsg(obstacle)
+            self.obstacle_list.append(new_obstacle)
 
     def advance(self, Ts=1.0):
         """

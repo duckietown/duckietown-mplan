@@ -1,6 +1,7 @@
 import rospy
+import numpy as np
 from std_msgs.msg import Empty
-
+from duckietown_msgs.msg import TimedPath
 
 class Trajectory:
     """
@@ -49,7 +50,7 @@ class Trajectory:
     """
 
     def __init__(self):
-        self.start_time = 0
+        self.start_time = rospy.Time.now()
         self.duration = 0
         self.ts = 0
         self.positions = []
@@ -60,7 +61,7 @@ class Trajectory:
     def __del__(self):
         pass
 
-    def getPositionFromTimePoint(time_point):
+    def getPositionFromTimePoint(self, time_point):
         """
         get the positional set point corresponding to the unnormalized time t.
 
@@ -79,9 +80,9 @@ class Trajectory:
         time_duration = (time_point - self.start_time).to_sec()
 
         # call the main getPosition method with the duration argument
-        return getPosition(time_duration)
+        return self.getPositionFromDuration(time_duration)
 
-    def getPosition(time_duration):
+    def getPositionFromDuration(self, time_duration):
         """
         get the positional set point corresponding to the unnormalized time t.
 
@@ -97,8 +98,34 @@ class Trajectory:
             1 x 2 numpy array containing the x and y positional set point
             correspoding to the given time.
         """
-        # TODO
-        pass
+        # assert we are not looking out of trajectory range
+        assert time_duration < self.duration
+
+        # find index of self.times corespoding to time_duration
+        idx = self.find_nearest(self.times, time_duration/self.duration)
+
+        # return respective points
+        return list(self.positions)[idx].x, list(self.positions)[idx].y
+
+    def find_nearest(self, array, value):
+        """
+        find the index of the element being the closest to value in array
+
+        Parameters
+        ----------
+        array: tupel
+            an array containing the values
+        value: float
+            the value searched for
+
+        Returns
+        -------
+        int
+            index of closest element in array
+        """
+        array = np.asarray(array)
+        idx = (np.abs(array - value)).argmin()
+        return idx
 
     def toMsg(self):
         """
@@ -110,10 +137,36 @@ class Trajectory:
 
         Returns
         -------
-        trajectory_msg #TODO define this message
+        duckietown_msgs.msg.TimedPath
             the message containing all information from the instance of this
             class
         """
-        # TODO
-        empty_msg = Empty()
-        return empty_msg
+        msg = TimedPath()
+        msg.start_time = self.start_time
+        msg.duration = self.duration
+        msg.ts = self.ts
+        msg.positions = self.positions
+        msg.times = self.times
+        msg.lower_bounds = self.lower_bounds
+        msg.upper_bounds = self.upper_bounds
+        return msg
+
+    def fromMsg(self, msg):
+        """
+        so to say a copy constructor from a msg
+
+        Parameters
+        ----------
+        msg: duckietown_msgs.msg.TimedPath
+
+        Returns
+        -------
+        none
+        """
+        self.start_time = msg.start_time
+        self.duration = msg.duration
+        self.ts = msg.ts
+        self.positions = msg.positions
+        self.times = msg.times
+        self.lower_bounds = msg.lower_bounds
+        self.upper_bounds = msg.upper_bounds

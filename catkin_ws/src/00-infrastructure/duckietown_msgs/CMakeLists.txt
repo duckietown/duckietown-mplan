@@ -77,6 +77,11 @@ add_message_files(
   ObstacleImageDetectionList.msg
   ObstacleProjectedDetection.msg
   ObstacleProjectedDetectionList.msg
+  MovingObject.msg
+  Actor.msg
+  Obstacles.msg
+  TimedPath.msg
+
 
 )
 

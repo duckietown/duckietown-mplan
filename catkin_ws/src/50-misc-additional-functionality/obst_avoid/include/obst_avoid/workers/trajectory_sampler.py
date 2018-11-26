@@ -56,10 +56,7 @@ class TrajectorySampler(WorkerBase):
         self.trajectory.start_time = rospy.Time.now()
         self.trajectory.duration = 5
         self.trajectory.ts = 1/self.frequency
-        vector = dtmsg.Vector2D()
-        vector.x = 1
-        vector.y = 1
-        self.trajectory.positions = {vector, vector}
+        self.trajectory.positions = [[0,0],[0,0]]
         self.trajectory.times = [0,1]
 
         self.actor = Obstacle()
@@ -91,7 +88,7 @@ class TrajectorySampler(WorkerBase):
             'obst_avoid/trajectory', dtmsg.TimedPath, self.trajectoryCb)
 
         self.actor_sub = rospy.Subscriber(
-            'obst_avoid/obstacles', dtmsg.Actor, self.actorCb)
+            'obst_avoid/actor', dtmsg.Actor, self.actorCb)
 
         self.command_pub = rospy.Publisher(
             'obst_avoid/twist', dtmsg.Twist2DStamped, queue_size=10)
@@ -100,7 +97,7 @@ class TrajectorySampler(WorkerBase):
         self.trajectory.fromMsg(data)
 
     def actorCb(self, data):
-        self.actor.fromMsg(data)
+        self.actor.fromMsg(data.moving_object)
 
     def advance(self, Ts=1.0):
         """

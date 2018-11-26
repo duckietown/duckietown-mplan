@@ -80,26 +80,23 @@ class TrajectoryCreator(WorkerBase):
         -------
         none
         """
-        # TODO add callback and make the subscriber save to self.actor
         self.actor_sub = rospy.Subscriber(
-            'obst_avoid/actor', dtmsg.Obstacles, self.actorCb)
+            'obst_avoid/actor', dtmsg.Actor, self.actorCb)
 
-        # TODO add callback and make the subscriber save to self.obstacle_list
         self.obstacle_sub = rospy.Subscriber(
-            'obst_avoid/obstacles', dtmsg.Actor, self.obstacleCb)
+            'obst_avoid/obstacles', dtmsg.Obstacles, self.obstacleCb)
 
-        # TODO add topic name, type etc
         self.trajectory_pub = rospy.Publisher(
             'obst_avoid/trajectory', dtmsg.TimedPath, queue_size=10)
 
     def actorCb(self, data):
-        self.actor.fromMsg(data)
+        self.actor.fromMsg(data.moving_object)
 
     def obstacleCb(self, data):
         self.obstacle_list = []
-        for i, obstacle in enumerate(data.moving_objects):
-            new_obstacle = dtmsg.Obstacle()
-            new_obstacle.fromMsg(obstacle)
+        for obstacle_msg in list(data.moving_objects):
+            new_obstacle = Obstacle()
+            new_obstacle.fromMsg(obstacle_msg)
             self.obstacle_list.append(new_obstacle)
 
     def advance(self, Ts=1.0):
@@ -118,8 +115,7 @@ class TrajectoryCreator(WorkerBase):
         """
 
         # populate the cost grid
-        cost_grid = self.cost_grid_populator.populate(
-            self.obstacle_list, self.actor)
+        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list)
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.actor)

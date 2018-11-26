@@ -2,6 +2,7 @@ import rospy
 import numpy as np
 from std_msgs.msg import Empty
 from duckietown_msgs.msg import TimedPath
+from duckietown_msgs.msg import Vector2D
 
 class Trajectory:
     """
@@ -105,7 +106,7 @@ class Trajectory:
         idx = self.find_nearest(self.times, time_duration/self.duration)
 
         # return respective points
-        return list(self.positions)[idx].x, list(self.positions)[idx].y
+        return self.positions[idx][0], self.positions[idx][1]
 
     def find_nearest(self, array, value):
         """
@@ -141,11 +142,18 @@ class Trajectory:
             the message containing all information from the instance of this
             class
         """
+        pos_list = set()
+        for elem in self.positions:
+            vec = Vector2D()
+            vec.x = elem[0]
+            vec.y = elem[1]
+            pos_list.add(vec)
+
         msg = TimedPath()
         msg.start_time = self.start_time
         msg.duration = self.duration
         msg.ts = self.ts
-        msg.positions = self.positions
+        msg.positions = pos_list
         msg.times = self.times
         msg.lower_bounds = self.lower_bounds
         msg.upper_bounds = self.upper_bounds
@@ -163,10 +171,14 @@ class Trajectory:
         -------
         none
         """
+        pos_list = []
+        for elem in msg.positions:
+            pos_list.append([elem.x, elem.y])
+
         self.start_time = msg.start_time
         self.duration = msg.duration
         self.ts = msg.ts
-        self.positions = msg.positions
+        self.positions = pos_list
         self.times = msg.times
         self.lower_bounds = msg.lower_bounds
         self.upper_bounds = msg.upper_bounds

@@ -1,4 +1,4 @@
 Header header
 Pose2DStamped pose
-Twist2DStamped twist
+Vector2D twist
 float64 safety_radius

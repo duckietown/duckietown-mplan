@@ -40,10 +40,7 @@ class CostGridSolver:
         trajectory.start_time = rospy.Time.now()
         trajectory.duration = 5
         trajectory.ts = 0.1
-        vector = dtmsg.Vector2D()
-        vector.x = 2
-        vector.y = 2
-        trajectory.positions = {vector, vector}
+        trajectory.positions = [[0,0],[0,0]]
         trajectory.times = [0,1]
 
         # TODO add values to trajectory

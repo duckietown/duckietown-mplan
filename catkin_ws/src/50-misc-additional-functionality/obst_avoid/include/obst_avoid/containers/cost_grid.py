@@ -1,11 +1,8 @@
 import numpy as np
-
+import networkx as nx
 
 class CostGrid:
     """
-    Represents a discrete grid where every point has a cost
-
-    #TODO define convention for x and y indices, where do they start
 
     Parameters
     ----------
@@ -24,7 +21,7 @@ class CostGrid:
 
     """
 
-    def __init__(self, n_x, n_y):
+    def __init__(self):
         """
         Create cost grid of size n_x x n_y
 
@@ -37,9 +34,19 @@ class CostGrid:
             size of cost grid in y direction
         """
         self.populated = False
-        self.n_x = n_x
-        self.n_y = n_y
-        self.costs = np.empty((n_x, n_y))
+
+        # initialize Graph object
+        self.costs = nx.Graph()
+
+        # initialize nodes of Graph object
+        self.costs.add_node((0,0), node_weight=0)   # S
+        self.costs.add_node((-1,1), node_weight=0)  # A
+        self.costs.add_node((1,1), node_weight=0)   # B
+        self.costs.add_node((0,2), node_weight=0)   # E
+
+        # initialize edges of Graph object
+        self.costs.add_weighted_edges_from([((0,0), (-1,1), 0),  \
+            ((0,0), (1,1), 0), ((-1,1), (0,2), 0), ((1,1), (0,2), 0)])
 
     def __del__(self):
         pass

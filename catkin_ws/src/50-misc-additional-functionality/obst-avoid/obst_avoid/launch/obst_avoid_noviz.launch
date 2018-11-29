@@ -1,25 +1,12 @@
 <launch>
-
-  <arg name="rviz_config"
-      default="$(find obst_avoid_viz)/config/default.rviz"/>
-  <arg name="map_name" default="robotarium1"/>
-
-  <!-- obstacle avoidance nodes -->
+<!-- obst avoid nodes -->
   <node name="trajectory_creator_node" pkg="obst_avoid" type="trajectory_creator_node.py" output="screen"/>
   <node name="trajectory_sampler_node" pkg="obst_avoid" type="trajectory_sampler_node.py" output="screen"/>
   <!-- <node name="example_publisher_node" pkg="obst_avoid" type="example_publisher_node.py" output="screen"/> -->
 
-  <!-- visualization nodes -->
-  <node name="duck_viz" pkg="obst_avoid_viz" type="duck_viz_node" output="screen"/>
-  <include file="$(find duckietown_visualization)/launch/publish_map.launch">
-      <arg name="map_name" value="$(arg map_name)"/>
-      <arg name="rviz_config" value="$(arg rviz_config)"/>
-  </include>
-
-  <!-- nodes from the simulation -->
+  <!-- simulation nodes -->
   <node name="fleet_planner_wrapper_node" pkg="obst_avoid" type="fleet_planner_wrapper_node.py" output="screen"/>
   <node name="flock_simulator_node" pkg="flock_simulator" type="flock_simulator_node.py" output="screen"/>
   <node name="flock_planner_node" pkg="flock_planner" type="flock_planner_node.py" output="screen"/>
-
 
 </launch>

@@ -62,6 +62,9 @@ class Trajectory:
     def __del__(self):
         pass
 
+    def __str__(self):
+        return self.positions.__str__()
+
     def getPositionFromTimePoint(self, time_point):
         """
         get the positional set point corresponding to the unnormalized time t.
@@ -170,12 +173,12 @@ class Trajectory:
             the message containing all information from the instance of this
             class
         """
-        pos_list = set()
+        pos_list = []
         for elem in self.positions:
             vec = Vector2D()
             vec.x = elem[0]
             vec.y = elem[1]
-            pos_list.add(vec)
+            pos_list.append(vec)
 
         msg = TimedPath()
         msg.start_time = self.start_time

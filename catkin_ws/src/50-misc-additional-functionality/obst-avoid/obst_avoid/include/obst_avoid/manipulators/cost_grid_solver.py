@@ -1,12 +1,12 @@
-from obst_avoid.containers import Obstacle
-from obst_avoid.containers import CostGrid
-from obst_avoid.containers import Trajectory
-
 import rospy
 import networkx as nx
+import numpy as np
 
 import duckietown_msgs.msg as dtmsg
 
+from obst_avoid.containers import Obstacle
+from obst_avoid.containers import CostGrid
+from obst_avoid.containers import Trajectory
 
 class CostGridSolver:
     """Populates the cost grid from the existing objects"""
@@ -46,13 +46,12 @@ class CostGridSolver:
 
         # solve the SP problem and print solution for verification
         path = nx.dijkstra_path(cost_grid.costs, (0,0), (0,2), weight_func)
-        print(path)
 
         # output solution to trajectory object
         trajectory.start_time = rospy.Time.now()
         trajectory.duration = 5
         trajectory.ts = 0.1
         trajectory.positions = path
-        trajectory.times = range(0, len(path))
+        trajectory.times = np.linspace(0, 1, len(path))
 
         return trajectory

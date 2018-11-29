@@ -19,12 +19,14 @@ class PathViz:
 
         path = Path()
         path.header.stamp = data.start_time
+        path.header.frame_id = 'map'
         for i, elem in enumerate(data.positions):
             pose = PoseStamped()
-            # pose.header.stamp = data.start_time + data.times[i]*times.duration
-            pose.pose.point.x = data.positions[i].x
-            pose.pose.point.y = data.positions[i].y
-            pose.pose.point.z = 0
+            pose.header.stamp = data.start_time + rospy.Duration(data.times[i]*data.duration)
+            pose.header.frame_id = 'map'
+            pose.pose.position.x = data.positions[i].x
+            pose.pose.position.y = data.positions[i].y
+            pose.pose.position.z = 0
             pose.pose.orientation.x = 0
             pose.pose.orientation.y = 0
             pose.pose.orientation.z = 0

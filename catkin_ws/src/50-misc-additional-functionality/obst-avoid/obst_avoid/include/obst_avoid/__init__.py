@@ -12,6 +12,7 @@ from workers.worker_base import WorkerBase
 from workers.worker_template import WorkerTemplate
 from workers.trajectory_creator import TrajectoryCreator
 from workers.trajectory_sampler import TrajectorySampler
+from workers.example_publisher import ExamplePublisher
 
 # from workers import *
 # from manipulators import *

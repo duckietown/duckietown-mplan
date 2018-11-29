@@ -1,4 +1,4 @@
-# obst_avoid18
+# obst-avoid
 This contains multiple ROS packages for obstacle avoidance and vualization thereof in Duckietown.
 
 ## Prerequisites
@@ -6,11 +6,21 @@ This contains multiple ROS packages for obstacle avoidance and vualization there
 - [duckietown-world](https://github.com/duckietown/duckietown-world)
 
 ## Installing
-From the `src` directory of your ROS Workspace, run
+Make sure you have the prerequisites installed.
+
+Clone this repo with
 ```
 $ git clone https://github.com/lgulich/Software/
 ```
-From your workspace directory, run
+Install the additional requirements using
+```
+$ pip install -r Software/catkin_ws/src/50-misc-additional-functionality/obst-avoid
+```
+Go to the catkin_ws
+```
+$ cd Software/catkin_ws
+```
+Load the submodules and build the workspace
 ```
 $ git submodule init
 $ git submodule update
@@ -24,8 +34,7 @@ $ source devel/setup.bash
 ```
 
 ## Running the obstacle avoidance and visualization
-Run the visualization of the `robotarium1` map, which is currently the default 
-by using
+Run the visualization with
 ```
 $ roslaunch obst_avoid obst_avoid_withviz.launch
 ```
@@ -36,9 +45,9 @@ You can specify different map names to be loaded according to the maps in
 $ roslaunch obst_avoid obst_avoid_withviz.launch map_name:="small_loop"
 ```
 
-Also different rviz configuration files can be specified.
+If you prefer to launch the obstacle avoider without visualization run
 ```
-$ roslaunch duckietown_visualization publish_map.launch map_name:="small_loop" rviz_config:="path/to/myconfig.rviz"
+$ roslaunch obst_avoid obst_avoid_noviz.launch
 ```
 
 
@@ -48,5 +57,5 @@ This package largely depends on
 - [duckietown-fplan](https://github.com/duckietown/duckietown-fplan) (is a submodule)
 - [duckietown-visualization](https://github.com/surirohit/duckietown-visualization) (is a submodule)
 
-See their respective documentations for further insights.
+See their respective documentations for further insights and instructions for installation.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from obst_avoid import ExamplePublisher
 import rospy
+from obst_avoid import ExamplePublisher
 
 
 def main():

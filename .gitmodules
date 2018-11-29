@@ -1,0 +1,6 @@
+[submodule "catkin_ws/src/50-misc-additional-functionality/duckietown-fplan"]
+	path = catkin_ws/src/50-misc-additional-functionality/duckietown-fplan
+	url = git@github.com:duckietown/duckietown-fplan.git
+[submodule "catkin_ws/src/50-misc-additional-functionality/duckietown-visualization"]
+	path = catkin_ws/src/50-misc-additional-functionality/duckietown-visualization
+	url = git@github.com:surirohit/duckietown-visualization.git

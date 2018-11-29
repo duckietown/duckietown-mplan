@@ -1,9 +1,6 @@
-from worker_base import WorkerBase
-# from duckietown_msgs.msg import Obstacles
-# from duckietown_msgs.msg import Actor
-
-import duckietown_msgs.msg as dtmsg
 import rospy
+import duckietown_msgs.msg as dtmsg
+from worker_base import WorkerBase
 
 class ExamplePublisher(WorkerBase):
     """
@@ -77,9 +74,10 @@ class ExamplePublisher(WorkerBase):
 
         # publish an obstacle, varying between -1 or 1
         moving_object_msg = dtmsg.MovingObject()
-        duration = (rospy.Time.now()-self.init_time).to_sec()
-        var_y = round(duration % 3) * 2 - 3
-        moving_object_msg.pose.y = round(var_y)
+        # duration = (rospy.Time.now()-self.init_time).to_sec()
+        # var_y = round(duration % 3) * 2 - 3
+        # moving_object_msg.pose.y = round(var_y)
+        moving_object_msg.pose.y = 1
         moving_object_msg.pose.x = 1
 
 
@@ -89,13 +87,11 @@ class ExamplePublisher(WorkerBase):
 
         # simulate that actor drives forwards with constant speed from 0 continously to 2
         actor_msg = dtmsg.Actor()
-        actor_msg.moving_object.pose.x = (duration % 20) / 20 * 2
+        # actor_msg.moving_object.pose.x = (duration % 20) / 20 * 2
+        actor_msg.moving_object.pose.x = 0
         actor_msg.moving_object.pose.y = 0
 
         self.actor_pub.publish(actor_msg)
-
-
-
 
 
     def shutdown(self):

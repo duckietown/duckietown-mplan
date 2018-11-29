@@ -1,12 +1,13 @@
+import rospy
+from std_msgs.msg import Empty
+import duckietown_msgs.msg as dtmsg
+
 from worker_base import WorkerBase
 from obst_avoid.manipulators import CostGridPopulator
 from obst_avoid.manipulators import CostGridSolver
 from obst_avoid.containers import Obstacle
 from obst_avoid.containers import Trajectory
 
-import rospy
-from std_msgs.msg import Empty
-import duckietown_msgs.msg as dtmsg
 
 
 class TrajectoryCreator(WorkerBase):
@@ -119,7 +120,7 @@ class TrajectoryCreator(WorkerBase):
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.actor)
-
+        
         # convert the trajectory to a msg
         trajectory_msg = trajectory.toMsg()
 

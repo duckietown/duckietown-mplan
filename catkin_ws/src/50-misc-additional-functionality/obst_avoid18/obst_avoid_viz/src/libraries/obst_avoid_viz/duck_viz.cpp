@@ -14,16 +14,16 @@ DuckViz::DuckViz(ros::NodeHandle &nh) : nh_(nh) {
 
 DuckViz::~DuckViz() {}
 
-/* \brief
- *  parse the flock_simulator::FlockState msg to rviz markers
- */
 void DuckViz::duckieBotSubCb(const flock_simulator::FlockState &msg) {
+  // create the empty marker array
   visualization_msgs::MarkerArray marker_array;
 
+  // here we loop over the duckiebots in the FlockState and generate a marker
+  // from each bot
   for (size_t i = 0; i < msg.duckie_states.size(); i++) {
-    // fill a single marker of whole marker array
+    // fill a single marker
     visualization_msgs::Marker marker;
-    marker.header.frame_id = "/world";
+    marker.header.frame_id = "/map";
     marker.header.stamp = ros::Time::now();
     marker.ns = "obst_avoid_viz";
     marker.id = i;
@@ -33,10 +33,11 @@ void DuckViz::duckieBotSubCb(const flock_simulator::FlockState &msg) {
     marker.pose.position.y = msg.duckie_states[i].pose.y;
     marker.pose.position.z = 0.05;
 
-    // create a quaternion from theta angle
+    // convert the theta angle to a quaternion
     tf2::Quaternion q;
     q.setRPY(0, 0, msg.duckie_states[i].pose.theta);
 
+    // continue filling marker
     marker.pose.orientation.x = q.getX();
     marker.pose.orientation.y = q.getY();
     marker.pose.orientation.z = q.getZ();
@@ -46,6 +47,7 @@ void DuckViz::duckieBotSubCb(const flock_simulator::FlockState &msg) {
     marker.scale.z = 0.1;
     marker.lifetime = ros::Duration();
 
+    // if the main duckiebot set its color to yellow, else duckiebot is red
     if (i == 0) {
       marker.color.r = 1.0f;
       marker.color.g = 1.0f;

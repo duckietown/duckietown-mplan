@@ -20,7 +20,7 @@
         </node>
     </group>
 
-	<!-- Joystick mapper and LED emitter -->
+	<!-- Joystick mapper and LED emitter -->
 	<group ns="$(arg veh)">
 
 	    <!-- run local -->
@@ -46,4 +46,3 @@
 
 	</group>
 </launch>
-

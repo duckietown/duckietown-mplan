@@ -95,9 +95,6 @@ class ExamplePublisher(WorkerBase):
         self.actor_pub.publish(actor_msg)
 
 
-
-
-
     def shutdown(self):
         """
         Clean up class before process end.

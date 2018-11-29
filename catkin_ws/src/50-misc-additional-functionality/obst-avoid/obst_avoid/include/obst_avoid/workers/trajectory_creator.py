@@ -120,9 +120,6 @@ class TrajectoryCreator(WorkerBase):
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.actor)
-
-        # DEBUG
-        print(trajectory)
         
         # convert the trajectory to a msg
         trajectory_msg = trajectory.toMsg()

@@ -1,10 +1,8 @@
 catkin==0.7.14
 catkin-pkg==0.4.9
-catkin-pkg-modules==0.4.9
 catkin-tools==0.4.4
 doxypypy==0.8.8.6
 empy==3.3.2
 numpy==1.11.0
 PyYAML==3.11
 rospkg==1.1.7
-rospkg-modules==1.1.7

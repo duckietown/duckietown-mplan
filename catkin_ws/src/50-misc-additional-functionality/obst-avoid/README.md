@@ -6,7 +6,7 @@ This contains multiple ROS packages for obstacle avoidance and vualization there
 - [duckietown-world](https://github.com/duckietown/duckietown-world)
 
 ## Installing
-Make sure you have the prerequisites installed. We recommend running the whole setup in a virtual environment using `python2.7`
+Make sure you have the prerequisites installed. We recommend running the whole setup in a virtual environment using `python2.7`.
 
 Clone this repo with
 ```

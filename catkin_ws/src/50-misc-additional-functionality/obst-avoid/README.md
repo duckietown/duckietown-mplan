@@ -24,7 +24,7 @@ $ git clone https://github.com/lgulich/Software/
 ```
 Install the additional requirements using
 ```
-$ pip install -r Software/catkin_ws/src/50-misc-additional-functionality/obst-avoid
+$ pip install -r Software/catkin_ws/src/50-misc-additional-functionality/obst-avoid/requirements.txt 
 ```
 Go to the catkin_ws
 ```

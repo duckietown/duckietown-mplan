@@ -8,13 +8,23 @@ This contains multiple ROS packages for obstacle avoidance and vualization there
 ## Installing
 Make sure you have the prerequisites installed. We recommend running the whole setup in a virtual environment using `python2.7`.
 
+setup virtual environment
+```
+$ virtualenv -p python2.7 venv
+```
+source virtual venv
+```
+$ source venv/bin/activate
+```
+
+
 Clone this repo with
 ```
 $ git clone https://github.com/lgulich/Software/
 ```
 Install the additional requirements using
 ```
-$ pip install -r Software/catkin_ws/src/50-misc-additional-functionality/obst-avoid
+$ pip install -r Software/catkin_ws/src/50-misc-additional-functionality/obst-avoid/requirements.txt 
 ```
 Go to the catkin_ws
 ```

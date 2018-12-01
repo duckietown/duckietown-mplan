@@ -12,14 +12,17 @@
 
 
   <!-- SIMULATION NODES -->
-  <include file="$(find flock_simulator)/launch/flock_simulator.launch">
-    <arg name="map_name" value="$(arg map_name)"/>
-    <arg name="n_duckies" value="$(arg n_duckies)"/>
-    <arg name="rviz_config" value="$(arg rviz_config)"/>
-  </include>
+  <node pkg="flock_simulator" name="flock_simulator_node" type="flock_simulator_node.py" output="screen">
+      <param name="map_name" value="$(arg map_name)"/>
+      <param name="n_duckies" value="$(arg n_duckies)"/>
+  </node>
   <node name="fleet_planner_wrapper_node" pkg="obst_avoid" type="fleet_planner_wrapper_node.py" output="screen"/>
 
   <!-- VISUALIZATION NODES -->
+  <include file="$(find flock_simulator)/launch/visualization.launch">
+    <arg name="map_name" value="$(arg map_name)"/>
+    <arg name="rviz_config" value="$(arg rviz_config)"/>
+  </include>
   <node name="duck_viz" pkg="obst_avoid_viz" type="duck_viz_node" output="screen"/>
   <node name="path_viz" pkg="obst_avoid_viz" type="path_viz_node.py" output="screen"/>
 

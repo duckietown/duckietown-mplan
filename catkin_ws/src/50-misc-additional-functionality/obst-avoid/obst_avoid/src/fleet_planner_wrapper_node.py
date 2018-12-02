@@ -15,14 +15,32 @@ fleet_command_pub = rospy.Publisher(
         'flock_simulator/commands', fsmsg.FlockCommand, queue_size=10)
 obstacle_pub = rospy.Publisher(
         'obst_avoid/obstacles', dtmsg.Obstacles, queue_size=10)
+actor_pub = rospy.Publisher(
+        'obst_avoid/actor', dtmsg.Actor, queue_size=10)
 
 def fleetPlannerCb(msg):
     # empty array for saving the obstacles
     obstacle_list = []
+    actor_msg = dtmsg.Actor()
 
     # parse every duckie state to a moving object msg
+    # if the duckie is our main controllerd duckie publish it to the actor topic
+    # else publish to obstacle topic
     for duck in msg.duckie_states:
         if duck.duckie_id.data == actor_id:
+            actor_msg.header = msg.header
+            actor_msg.name = duck.duckie_id.data
+            actor_msg.moving_object.pose.x = duck.pose.x
+            actor_msg.moving_object.pose.y = duck.pose.y
+            actor_msg.moving_object.pose.theta = duck.pose.theta
+            actor_msg.moving_object.twist.x = duck.velocity.linear.x
+            actor_msg.moving_object.twist.y = duck.velocity.linear.y
+            actor_msg.moving_object.safety_radius = duckie_radius
+
+            # save omega for command calculation
+            actor_omega = duck.pose.theta
+            
+        else:
             obstacle = dtmsg.MovingObject()
             obstacle.pose.x = duck.pose.x
             obstacle.pose.y = duck.pose.y
@@ -31,15 +49,14 @@ def fleetPlannerCb(msg):
             obstacle.twist.y = duck.velocity.linear.y
             obstacle.safety_radius = duckie_radius
             obstacle_list.append(obstacle)
-        else:
-            actor_omega = duck.pose.theta
+
 
     # create and fill Obstacles msg and publish it
     obstacle_list_msg = dtmsg.Obstacles()
     obstacle_list_msg.header = msg.header
     obstacle_list_msg.moving_objects = obstacle_list
     obstacle_pub.publish(obstacle_list_msg)
-
+    actor_pub.publish(actor_msg)
 
 def commandCb(msg):
 
@@ -50,8 +67,8 @@ def commandCb(msg):
     command = fsmsg.DuckieCommand()
     command.duckie_id.data = actor_id
     command.on_rails.data = False
-    command.command.linear.x = math.sin(actor_omega)*msg.v
-    command.command.linear.y = math.cos(actor_omega)*msg.v
+    command.command.linear.x = math.cos(actor_omega)*msg.v
+    command.command.linear.y = math.sin(actor_omega)*msg.v
     command.command.linear.z = 0
     command.command.angular.x = 0
     command.command.angular.y = 0

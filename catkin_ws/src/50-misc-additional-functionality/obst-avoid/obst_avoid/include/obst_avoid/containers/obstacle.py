@@ -76,7 +76,6 @@ class Obstacle:
         msg.twist.x = self.x_dot
         msg.twist.y = self.y_dot
         msg.safety_radius = self.r
-        pass
 
     def fromMsg(self, msg):
         """
@@ -92,9 +91,9 @@ class Obstacle:
         """
         self.x = msg.pose.x
         self.y = msg.pose.y
-        self.radius = msg.safety_radius
         self.x_dot = msg.twist.x
         self.y_dot = msg.twist.y
+        self.radius = msg.safety_radius
 
     def getState(self):
         """

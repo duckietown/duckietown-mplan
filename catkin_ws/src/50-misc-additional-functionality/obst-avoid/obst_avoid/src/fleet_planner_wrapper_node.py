@@ -33,13 +33,16 @@ def fleetPlannerCb(msg):
             actor_msg.moving_object.pose.x = duck.pose.x
             actor_msg.moving_object.pose.y = duck.pose.y
             actor_msg.moving_object.pose.theta = duck.pose.theta
-            actor_msg.moving_object.twist.x = duck.velocity.linear.x
-            actor_msg.moving_object.twist.y = duck.velocity.linear.y
+            lx = duck.velocity.linear.x
+            ly = duck.velocity.linear.y
+            theta = duck.pose.theta
+            actor_msg.moving_object.twist.x = math.cos(theta)*lx-math.sin(theta)*ly
+            actor_msg.moving_object.twist.y = math.sin(theta)*lx+math.cos(theta)*ly
             actor_msg.moving_object.safety_radius = duckie_radius
 
             # save omega for command calculation
             actor_omega = duck.pose.theta
-            
+
         else:
             obstacle = dtmsg.MovingObject()
             obstacle.pose.x = duck.pose.x

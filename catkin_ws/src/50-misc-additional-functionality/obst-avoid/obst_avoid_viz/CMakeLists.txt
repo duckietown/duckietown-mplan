@@ -12,6 +12,7 @@ find_package(catkin REQUIRED
   visualization_msgs
   flock_simulator
   tf2
+  duckietown_visualization
 )
 
 

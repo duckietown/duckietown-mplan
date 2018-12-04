@@ -116,7 +116,7 @@ class TrajectoryCreator(WorkerBase):
         """
 
         # populate the cost grid
-        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list)
+        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, 1.0)
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.actor)

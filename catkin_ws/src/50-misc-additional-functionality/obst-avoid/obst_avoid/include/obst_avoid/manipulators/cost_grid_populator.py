@@ -11,7 +11,7 @@ class CostGridPopulator:
     def __del__(self):
         pass
 
-    def connectGraph(graph, actor_x, actor_y):
+    def connectGraph(self, graph, actor_x, actor_y):
         """
         connect the graph of an obstacle grid
 
@@ -46,7 +46,7 @@ class CostGridPopulator:
 
         cost_grid = CostGrid()
 
-        connectGraph(cost_grid.nodes, actor_position.x, actor_position.y)
+        self.connectGraph(cost_grid.costs, actor_position.x, actor_position.y)
 
         # state optimization truncation values
         x_min = -1

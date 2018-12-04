@@ -1,0 +1,13 @@
+
+cost_grid:
+  depth:
+    time: 6
+    x: 6
+    y: 5
+  delta:
+    time: 1 #[s]
+    x: 0.2 #[m]
+    y: 0.1 #[m]
+
+velocity:
+  max: 0.1 #[m/s]

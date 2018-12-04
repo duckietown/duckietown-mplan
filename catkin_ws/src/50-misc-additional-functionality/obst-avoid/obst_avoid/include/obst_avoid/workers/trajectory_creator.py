@@ -63,10 +63,24 @@ class TrajectoryCreator(WorkerBase):
         -------
         none
         """
+        # cost grid parameters from ros parameter server
+        self.cost_grid_params =	{
+            'n_t' : rospy.get_param('cost_grid/depth/time'),
+            'n_x' : rospy.get_param('cost_grid/depth/x'),
+            'n_y' : rospy.get_param('cost_grid/depth/y'),
+            'dt' : rospy.get_param('cost_grid/delta/time'),
+            'dx' : rospy.get_param('cost_grid/delta/x'),
+            'dy' : rospy.get_param('cost_grid/delta/y')
+        }
+        self.max_actor_vel = rospy.get_param('velocity/max')
+
+
+
         self.cost_grid_populator = CostGridPopulator()
         self.cost_grid_solver = CostGridSolver()
         self.actor = Obstacle()
         self.obstacle_list = []
+
 
     def initIO(self):
         """
@@ -116,7 +130,7 @@ class TrajectoryCreator(WorkerBase):
         """
 
         # populate the cost grid
-        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, 1.0)
+        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel)
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.actor)

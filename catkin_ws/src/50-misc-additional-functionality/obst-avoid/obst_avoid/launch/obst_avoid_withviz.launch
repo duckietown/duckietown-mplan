@@ -1,5 +1,7 @@
 <launch>
 
+  <rosparam file="$(find obst_avoid)/config/obst_avoid_params.yaml" command="load"/>
+
   <arg name="rviz_config"
       default="$(find obst_avoid_viz)/config/default.rviz"/>
   <arg name="map_name" default="robotarium1"/>

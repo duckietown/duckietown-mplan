@@ -28,7 +28,7 @@ class CostGridPopulator:
         """
         pass
 
-    def populate(self, actor_position, list_of_obstacles, max_actor_vel):
+    def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel):
         """
         Create a cost grid and populate it according to the obstacles
 
@@ -38,6 +38,11 @@ class CostGridPopulator:
             an object containing the position and speed of acting duckiebot
         list_of_obstacles: obstacle[]
             a list of obstacle objects known to be around
+        cost_grid_params: dictionary
+            a python dictionary containing the size and resolution of the cost
+            grid. Entries are 'n_t', 'n_x', 'n_y', 'dt', 'dx', 'dy'
+        max_actor_vel: float
+            the maximum velocity in [m/s] of a duckiebot
 
         Returns
         -------

@@ -7,7 +7,10 @@ Panels:
         - /Global Options1
         - /DuckieBots1
         - /DuckieBots1/Namespaces1
+        - /Path1
         - /Path1/Offset1
+        - /Marker1
+        - /Marker1/Namespaces1
       Splitter Ratio: 0.405555546
     Tree Height: 737
   - Class: rviz/Selection
@@ -55,7 +58,9 @@ Visualization Manager:
       Marker Topic: /duckietown_map
       Name: Duckietown Map
       Namespaces:
+        apriltags: true
         tiles: true
+        traffic-signs: true
       Queue Size: 100
       Value: true
     - Class: rviz/Axes
@@ -96,6 +101,14 @@ Visualization Manager:
       Topic: /obst_avoid_viz/path
       Unreliable: false
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /obst_avoid_viz/trajectory/sampled_point
+      Name: Marker
+      Namespaces:
+        obst_avoid_viz: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -121,7 +134,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 16.7074604
+      Distance: 11.3856659
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
@@ -136,10 +149,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.529797316
+      Pitch: 0.109797671
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.4099679
+      Yaw: 4.27496433
     Saved: ~
 Window Geometry:
   Displays:

@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   duckietown_msgs
   std_msgs
   geometry_msgs
+  obst_avoid_viz
 )
 
 catkin_python_setup()

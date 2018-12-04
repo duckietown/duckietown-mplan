@@ -48,7 +48,7 @@ void DuckViz::duckieBotSubCb(const flock_simulator::FlockState &msg) {
     marker.lifetime = ros::Duration();
 
     // if the main duckiebot set its color to yellow, else duckiebot is red
-    if (i == 0) {
+    if (msg.duckie_states[i].duckie_id.data == "duckie-0") {
       marker.color.r = 1.0f;
       marker.color.g = 1.0f;
       marker.color.b = 0.0f;

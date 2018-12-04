@@ -1,3 +1,3 @@
 Header header
-MovingObject moving_object
 string name
+MovingObject moving_object

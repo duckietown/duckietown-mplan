@@ -120,7 +120,14 @@ class TrajectoryCreator(WorkerBase):
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.actor)
-        
+
+        # trajectory = Trajectory()
+        # trajectory.start_time = rospy.Time.now()
+        # trajectory.duration = 50
+        # trajectory.ts = 5
+        # trajectory.positions = [[0,0],[2,0],[4,0],[6,0],[10,0],[10,0]]
+        # trajectory.times = [0,.2,.4,.6,.8,1]
+
         # convert the trajectory to a msg
         trajectory_msg = trajectory.toMsg()
 

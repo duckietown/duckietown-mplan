@@ -11,7 +11,24 @@ class CostGridPopulator:
     def __del__(self):
         pass
 
-    def populate(self, actor_position, list_of_obstacles):
+    def connectGraph(graph, actor_x, actor_y):
+        """
+        connect the graph of an obstacle grid
+
+        Parameters
+        ----------
+        graph : networkx.Graph
+            the graph to be connected
+        actor : containers.Obstacle
+            state object of the obstacle
+
+        Returns
+        -------
+        networkx.Graph : the connected graph
+        """
+        pass
+
+    def populate(self, actor_position, list_of_obstacles, max_actor_vel):
         """
         Create a cost grid and populate it according to the obstacles
 
@@ -29,6 +46,8 @@ class CostGridPopulator:
 
         cost_grid = CostGrid()
 
+        connectGraph(cost_grid.nodes, actor_position.x, actor_position.y)
+
         # state optimization truncation values
         x_min = -1
         x_max = 1
@@ -44,3 +63,34 @@ class CostGridPopulator:
 
         cost_grid.populated = True
         return cost_grid
+
+    def getCost(x, y, t, obstacle_list):
+        """
+        return the value of the costfunction at a specific time point
+
+        Parameters
+        ----------
+        x : float
+            x position of the requested cost value
+        y : float
+            y position of the requested cost value
+        t : float
+            time of requested cost value
+        obstacle_list : containers.Obstacle[]
+            list of obstacles state objects
+
+        Returns
+        -------
+        float : the requested cost
+        """
+        out = 0
+        for obstacle in obstacle_list:
+            # attention: getCost currently only returns 0
+            out += obstacle.getCost(x,y,t)
+
+        #TODO add cost of cake
+        #out += cake_cost
+
+        #TODO add cost of street boundaries
+        #out += street_cost
+        return out

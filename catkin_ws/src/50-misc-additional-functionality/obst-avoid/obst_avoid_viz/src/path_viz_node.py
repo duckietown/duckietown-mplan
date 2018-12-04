@@ -33,8 +33,14 @@ class PathViz:
             pose.pose.orientation.w = 0
 
             path.poses.append(pose)
-
         self.path_pub.publish(path)
+
+        # trajectory = Trajectory()
+        # trajectory.fromMsg(data)
+        # x,y = trajectory.getPositionFromTimePoint(rospy.Time.now())
+        # marker_msg = Marker()
+        # marker_msg.header.stamp = d
+        # marker_msg.header.frame_id = 'map'
 
 
 def main():

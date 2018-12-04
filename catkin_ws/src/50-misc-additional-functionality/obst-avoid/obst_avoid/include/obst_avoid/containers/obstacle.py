@@ -114,4 +114,24 @@ class Obstacle:
         float
             the y velocity
         """
-        return self.x, self.y, self.y_dot, self.y_dot
+        return self.x, self.y, self.x_dot, self.y_dot
+
+    def getCost(self, x, y, t):
+        """
+        return the value of the cost created by this obstacle at a specific time point
+
+        Parameters
+        ----------
+        x : float
+            x position of the requested cost value
+        y : float
+            y position of the requested cost value
+        t : float
+            time of requested cost value
+
+        Returns
+        -------
+        float : the requested cost
+        """
+        print('[containers.Obstacle.getCost] WARNING: not implemented')
+        return 0

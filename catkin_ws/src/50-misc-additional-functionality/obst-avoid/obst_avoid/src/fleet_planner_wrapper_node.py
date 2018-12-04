@@ -38,6 +38,7 @@ def fleetPlannerCb(msg):
             theta = duck.pose.theta
             actor_msg.moving_object.twist.x = math.cos(theta)*lx-math.sin(theta)*ly
             actor_msg.moving_object.twist.y = math.sin(theta)*lx+math.cos(theta)*ly
+
             actor_msg.moving_object.safety_radius = duckie_radius
 
             # save omega for command calculation
@@ -70,8 +71,8 @@ def commandCb(msg):
     command = fsmsg.DuckieCommand()
     command.duckie_id.data = actor_id
     command.on_rails.data = False
-    command.command.linear.x = math.cos(actor_omega)*msg.v
-    command.command.linear.y = math.sin(actor_omega)*msg.v
+    command.command.linear.x = msg.v
+    command.command.linear.y = 0
     command.command.linear.z = 0
     command.command.angular.x = 0
     command.command.angular.y = 0

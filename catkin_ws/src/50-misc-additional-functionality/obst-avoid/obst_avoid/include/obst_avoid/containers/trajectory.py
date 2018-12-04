@@ -3,6 +3,7 @@ import numpy as np
 from std_msgs.msg import Empty
 from duckietown_msgs.msg import TimedPath
 from duckietown_msgs.msg import Vector2D
+from scipy.interpolate import interp1d
 
 class Trajectory:
     """
@@ -65,6 +66,13 @@ class Trajectory:
     def __str__(self):
         return self.positions.__str__()
 
+    def updateInterpolation(self):
+        x = [elem[0] for elem in self.positions]
+        y = [elem[1] for elem in self.positions]
+        self.f_x = interp1d(self.times, x, kind='linear')
+        self.f_y = interp1d(self.times, y, kind='linear')
+
+
     def getPositionFromTimePoint(self, time_point):
         """
         get the positional set point corresponding to the unnormalized time t.
@@ -105,39 +113,14 @@ class Trajectory:
         # assert we are not looking out of trajectory range
         assert time_duration < self.duration
 
+        # scale time to unit duration
+        normalized_time = time_duration/self.duration
+
         # find index of self.times corespoding to time_duration
         idx = self.find_nearest(self.times, time_duration/self.duration)
 
         # return respective points
-        return self.positions[idx][0], self.positions[idx][1]
-
-
-
-        """
-          _____                    _____                    _____                    _____
-         /\    \                  /\    \                  /\    \                  /\    \
-        /::\____\                /::\    \                /::\    \                /::\____\
-       /:::/    /               /::::\    \              /::::\    \              /:::/    /
-      /:::/    /               /::::::\    \            /::::::\    \            /:::/    /
-     /:::/    /               /:::/\:::\    \          /:::/\:::\    \          /:::/    /
-    /:::/____/               /:::/__\:::\    \        /:::/__\:::\    \        /:::/    /
-   /::::\    \              /::::\   \:::\    \      /::::\   \:::\    \      /:::/    /
-  /::::::\____\________    /::::::\   \:::\    \    /::::::\   \:::\    \    /:::/    /
- /:::/\:::::::::::\    \  /:::/\:::\   \:::\    \  /:::/\:::\   \:::\____\  /:::/    /
-/:::/  |:::::::::::\____\/:::/  \:::\   \:::\____\/:::/  \:::\   \:::|    |/:::/____/
-\::/   |::|~~~|~~~~~     \::/    \:::\  /:::/    /\::/   |::::\  /:::|____|\:::\    \
- \/____|::|   |           \/____/ \:::\/:::/    /  \/____|:::::\/:::/    /  \:::\    \
-       |::|   |                    \::::::/    /         |:::::::::/    /    \:::\    \
-       |::|   |                     \::::/    /          |::|\::::/    /      \:::\    \
-       |::|   |                     /:::/    /           |::| \::/____/        \:::\    \
-       |::|   |                    /:::/    /            |::|  ~|               \:::\    \
-       |::|   |                   /:::/    /             |::|   |                \:::\    \
-       \::|   |                  /:::/    /              \::|   |                 \:::\____\
-        \:|   |                  \::/    /                \:|   |                  \::/    /
-         \|___|                   \/____/                  \|___|                   \/____/
-
-
-    """
+        return self.f_x(normalized_time), self.f_y(normalized_time)
 
     def find_nearest(self, array, value):
         """
@@ -213,3 +196,5 @@ class Trajectory:
         self.times = msg.times
         self.lower_bounds = msg.lower_bounds
         self.upper_bounds = msg.upper_bounds
+
+        self.updateInterpolation()

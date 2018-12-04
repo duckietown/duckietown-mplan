@@ -58,6 +58,7 @@ class TrajectorySampler(WorkerBase):
         self.trajectory.ts = 1/self.frequency
         self.trajectory.positions = [[0,0],[0,0]]
         self.trajectory.times = [0,1]
+        self.trajectory.updateInterpolation()
 
         self.actor = Obstacle()
 
@@ -146,6 +147,16 @@ class TrajectorySampler(WorkerBase):
         ref = (6 * d_ref + 1 * phi_ref)
         est = (6 * d_est + 1 * phi_est)
         err = ref - est
+        # print('phi_ref: %f, %f', phi_ref, phi_est)
+        d_err = d_ref-d_est
+        phi_err = phi_ref -phi_est
+
+        if phi_err > math.pi:
+            phi_err -= 2*math.pi
+        elif phi_err < -math.pi:
+            phi_err += 2*math.pi
+
+        err = 0*d_err+1*phi_err
 
         # PID for omega
         C_P = self.k_P * err

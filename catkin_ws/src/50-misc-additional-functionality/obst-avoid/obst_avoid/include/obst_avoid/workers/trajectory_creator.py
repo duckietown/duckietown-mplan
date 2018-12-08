@@ -133,7 +133,7 @@ class TrajectoryCreator(WorkerBase):
         cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel)
 
         # solve the cost grid for a trajectory
-        trajectory = self.cost_grid_solver.solve(cost_grid, self.actor)
+        trajectory = self.cost_grid_solver.solve(cost_grid, self.cost_grid_params)
 
         # trajectory = Trajectory()
         # trajectory.start_time = rospy.Time.now()

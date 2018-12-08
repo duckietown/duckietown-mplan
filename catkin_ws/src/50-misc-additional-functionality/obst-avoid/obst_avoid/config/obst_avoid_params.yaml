@@ -10,4 +10,4 @@ cost_grid:
     y: 0.1 #[m]
 
 velocity:
-  max: 0.1 #[m/s]
+  max: 0.225s #[m/s] (must be >= max(dy/dt, dx/dt))

@@ -17,7 +17,7 @@ class CostGridSolver:
     def __del__(self):
         pass
 
-    def solve(self, cost_grid, actor_position):
+    def solve(self, cost_grid, cost_grid_params):
         """
         Find the optimal path through the cost grid and save the path in a
         trajectory
@@ -45,13 +45,18 @@ class CostGridSolver:
             return node_u_wt/2. + node_v_wt/2. + edge_wt
 
         # solve the SP problem and print solution for verification
-        path = nx.dijkstra_path(cost_grid.costs, (0,0), (0,2), weight_func)
+        path = nx.dijkstra_path(cost_grid.costs, 'S', 'E', weight_func)
+
+        # convert path object
+        path_tf = []
+        for waypoint in path[1:len(path)-1]: #to cutoff 'S' and 'E'
+            path_tf.append((cost_grid.costs.getX_pos(waypoint), cost_grid.costs.getY_pos(waypoint))
 
         # output solution to trajectory object
         trajectory.start_time = rospy.Time.now()
-        trajectory.duration = 5
-        trajectory.ts = 0.1
-        trajectory.positions = path
-        trajectory.times = np.linspace(0, 1, len(path))
+        trajectory.duration = cost_grid_params.get('n_t')
+        trajectory.ts = cost_grid_params.get('dt')
+        trajectory.positions = path_tf
+        trajectory.times = np.linspace(0, 1, len(path_tf))
 
         return trajectory

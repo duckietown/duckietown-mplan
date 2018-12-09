@@ -110,7 +110,6 @@ class CostGridPopulator:
             results = sp.solve([eq1, eq2, eq3, eq4, eq5, eq6, eq7],[a,b,c,d,e,f,g])
 
             # print results
-
             a_num = results[a]
             b_num = results[b]
             c_num = results[c]
@@ -154,10 +153,11 @@ class CostGridPopulator:
         for k in range(cost_grid_params.get('n_t')):
             for i in range(cost_grid_params.get('n_x')):
                 for j in range(cost_grid_params.get('n_y')):
-                    x_pos=i*cost_grid_params.get('dx')
-                    y_pos=(j-1)/2.0*cost_grid_params.get('dy') # for centered coordinate system
+                    x_pos=round(i*cost_grid_params.get('dx'),2)
+                    y_pos=round((j-(cost_grid_params.get('n_y')-1)/2.0)*cost_grid_params.get('dy'), 2) # for centered coordinate system
                     t_pos=k*cost_grid_params.get('dt')
                     self.cost_grid.costs.add_node((i, j, k), x_pos=x_pos, y_pos=y_pos, t_pos=t_pos, node_weight=0.0)
+
 
     def __del__(self):
         pass
@@ -172,7 +172,7 @@ class CostGridPopulator:
             the graph to be connected
         actor : containers.Obstacle
             state object of the actor
-        max_actor_vel: float
+        max_actor_vel : float
             the maximum velocity in [m/s] of a duckiebot
 
         Returns
@@ -182,7 +182,7 @@ class CostGridPopulator:
         # connect start node (find closest node index to current actor position) to first layer (layer 0)
         k_0 = 0
         i_0 = 0
-        j_0 = int(round(actor_y/cost_grid_params.get('dy')*2.0 + 1))
+        j_0 = int(round(actor_y/cost_grid_params.get('dy')+(cost_grid_params.get('n_y')-1)/2.0))
         self.cost_grid.costs.add_weighted_edges_from([('S', (i_0,j_0,k_0), 0.0)])
 
         # connect layers from layer 0 to layer n_t-1
@@ -195,25 +195,28 @@ class CostGridPopulator:
         # instantiate mask
         mask = [(0,0), (1,0), (-1,0), (0,1), (0, -1), (1,1), (-1,1), (1, -1), (-1, -1), (0,2), (0,-2)]
 
-        # iterate
-        for k in range(cost_grid_params.get('n_t')):
-            next_nodes = []
-            for current_node in active_nodes:
-                for mask_element in mask:
-                    mask_x = i_n + mask_element[0]
-                    mask_y = j_n + mask_element[1]
-                    curr_node = (i_n, j_n, k_n)
-                    next_node = (mask_x, mask_y, k_n + 1)
-                    if next_node not in next_nodes and mask_x>=0 and mask_x<=cost_grid_params.get('n_x')-1 and mask_y>=0 and mask_y<=cost_grid_params.get('n_y')-1:
-                        self.cost_grid.costs.add_weighted_edges_from([(curr_node, next_node, self.getEdgeCost(curr_node, next_node))])
-                        next_nodes.append((mask_x, mask_y, k_n + 1))
-            active_nodes = next_nodes
-
         # connect end node to last layer (layer n_t-1)
         k = cost_grid_params.get('n_t') - 1
         for i in range(cost_grid_params.get('n_x')):
             for j in range(cost_grid_params.get('n_y')):
                 self.cost_grid.costs.add_weighted_edges_from([((i,j,k), 'E', 0.0)])
+
+        # iterate
+        for k in range(cost_grid_params.get('n_t')-1):
+            next_nodes = []
+            for current_node in active_nodes:
+                i_n = current_node[0]
+                j_n = current_node[1]
+                k_n = current_node[2]
+                for mask_element in mask:
+                    mask_x = i_n + mask_element[0]
+                    mask_y = j_n + mask_element[1]
+                    curr_node = (i_n, j_n, k_n)
+                    next_node = (mask_x, mask_y, k_n + 1)
+                    if next_node not in next_nodes and mask_x>=0 and mask_x<=(cost_grid_params.get('n_x')-1) and mask_y>=0 and mask_y<=(cost_grid_params.get('n_y')-1):
+                        self.cost_grid.costs.add_weighted_edges_from([(curr_node, next_node, self.getEdgeCost(curr_node, next_node))])
+                        next_nodes.append((mask_x, mask_y, k_n + 1))
+            active_nodes = next_nodes
 
     def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel):
         """
@@ -296,7 +299,7 @@ class CostGridPopulator:
 
         curr_delta_y = self.cost_grid.getY_pos(next_node[0], next_node[1], next_node[2])-self.cost_grid.getY_pos(curr_node[0], curr_node[1], curr_node[2])
 
-        norm_factor = 1.0; # depends on the order of magnitude of the node cost function
+        norm_factor = 0.0; # depends on the order of magnitude of the node cost function
         distance = norm_factor * math.sqrt(curr_delta_x**2 + curr_delta_y**2)
 
         return distance

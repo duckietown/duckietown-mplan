@@ -1,6 +1,7 @@
 import rospy
 import networkx as nx
 import numpy as np
+import matplotlib.pyplot as plt
 
 import duckietown_msgs.msg as dtmsg
 
@@ -45,12 +46,13 @@ class CostGridSolver:
             return node_u_wt/2. + node_v_wt/2. + edge_wt
 
         # solve the SP problem and print solution for verification
+        # print(cost_grid.costs.edges())
         path = nx.dijkstra_path(cost_grid.costs, 'S', 'E', weight_func)
 
         # convert path object
         path_tf = []
         for waypoint in path[1:len(path)-1]: #to cutoff 'S' and 'E'
-            path_tf.append((cost_grid.costs.getX_pos(waypoint), cost_grid.costs.getY_pos(waypoint)))
+            path_tf.append((cost_grid.getX_pos(waypoint[0], waypoint[1], waypoint[2]), cost_grid.getY_pos(waypoint[0], waypoint[1], waypoint[2])))
 
         # output solution to trajectory object
         # TODO LG check this please
@@ -58,6 +60,7 @@ class CostGridSolver:
         trajectory.duration = cost_grid_params.get('n_t')*cost_grid_params.get('dt')
         trajectory.ts = cost_grid_params.get('dt')
         trajectory.positions = path_tf
+        print(path)
         print(path_tf)
         trajectory.times = np.linspace(0, 1, len(path_tf))
 

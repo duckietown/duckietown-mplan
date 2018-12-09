@@ -3,6 +3,11 @@ from obst_avoid.containers import CostGrid
 import math
 import sympy as sp
 
+from std_msgs.msg import ColorRGBA
+from geometry_msgs.msg import Point
+from visualization_msgs.msg import Marker
+
+
 class CostGridPopulator:
     """Populates the cost grid from the existing objects"""
 
@@ -240,25 +245,40 @@ class CostGridPopulator:
         -------
         CostGrid : a cost grid where each grid point has an assigned cost
         """
+        # local variables
+        n_t = cost_grid_params.get('n_t')
+        n_x = cost_grid_params.get('n_x')
+        n_y = cost_grid_params.get('n_y')
+        id = 1
+
         # add weighted nodes to cost_grid object
-        for k in range(cost_grid_params.get('n_t')):
-            for i in range(cost_grid_params.get('n_x')):
-                for j in range(cost_grid_params.get('n_y')):
-                    cost = self.getCost(self.cost_grid.getX_pos(i,j,k), self.cost_grid.getY_pos(i,j,k), self.cost_grid.getT_pos(i,j,k), list_of_obstacles)
+        for k in range(n_t):
+            for i in range(n_x):
+                for j in range(n_y):
+                    x = self.cost_grid.getX_pos(i,j,k)
+                    y = self.cost_grid.getY_pos(i,j,k)
+                    t = self.cost_grid.getT_pos(i,j,k)
+                    cost = self.getCost(x, y, t, list_of_obstacles)
                     self.cost_grid.setCost(i, j, k, cost)
-                    marker_array.color.a = 1.0
-                    marker_array.color.r = 1.0 * cost
-                    marker_array.color.g = 0.0
-                    marker_array.color.b = 0.0
-                    marker_array.pose.position.x = self.cost_grid.getX_pos(i,j,k)
-                    marker_array.pose.position.y = self.cost_grid.getY_pos(i,j,k)
-                    marker_array.pose.position.z = self.cost_grid.getT_pos(i,j,k)
-                    marker_array.scale.x = 0.1
-                    marker_array.scale.y = 0.1
-                    marker_array.scale.z = 0.1
-                    marker_array.type = marker_array.SPHERE
-                    marker_array.header.frame_id = "/map"
-                    marker_array.action = marker_array.ADD
+                    # visualizations of each cost grid element
+                    marker = Marker()
+                    marker.id = id
+                    id +=1
+                    marker.ns = 'cost_grid'
+                    marker.type = Marker.SPHERE
+                    marker.header.frame_id = "/map"
+                    marker.action = Marker.ADD
+                    marker.scale.x = 0.1
+                    marker.scale.y = 0.1
+                    marker.scale.z = 0.1
+                    marker.color.a = 1.0
+                    marker.color.r = 3 * cost
+                    marker.color.g = 0.0
+                    marker.color.b = 0.0
+                    marker.pose.position.x = x
+                    marker.pose.position.y = y
+                    marker.pose.position.z = t/10
+                    marker_array.markers.append(marker)
 
         # add weighted edges to graph
         self.connectGraph(self.cost_grid.costs, actor_position.x, actor_position.y, cost_grid_params, max_actor_vel)

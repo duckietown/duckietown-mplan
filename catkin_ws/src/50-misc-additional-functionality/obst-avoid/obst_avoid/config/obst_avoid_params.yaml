@@ -1,9 +1,9 @@
 
 cost_grid:
   depth:
-    time: 6
-    x: 6
-    y: 5
+    time: 6 # discrete time steps
+    x: 6 # no. of deltas for length
+    y: 5 # no. of deltas for width
   delta:
     time: 1 #[s]
     x: 0.2 #[m]

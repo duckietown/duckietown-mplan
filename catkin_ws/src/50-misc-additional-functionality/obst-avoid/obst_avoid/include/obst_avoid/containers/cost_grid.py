@@ -45,7 +45,7 @@ class CostGrid:
     def isPopulated(self):
         return self.populated
 
-    def setCost(x, y, t, cost):
+    def setCost(self, x, y, t, cost):
         """
         Get the value of the cost grid at a certain point
 
@@ -64,7 +64,7 @@ class CostGrid:
         -------
         empty
         """
-        self.costs.nodes[(i, j, k)]['node_weight'] = cost
+        self.costs.nodes[(x, y, t)]['node_weight'] = cost
 
     def getCost(self, x, y, t):
         """
@@ -86,7 +86,7 @@ class CostGrid:
         """
         return self.costs.nodes[(x, y, t)]['node_weight']
 
-    def getX_pos(x, y, t):
+    def getX_pos(self, x, y, t):
         """
         Get the x_pos of the cost grid at a certain point
 
@@ -106,7 +106,7 @@ class CostGrid:
         """
         return self.costs.nodes[(x, y, t)]['x_pos']
 
-    def getY_pos(x, y, t):
+    def getY_pos(self, x, y, t):
         """
         Get the y_pos of the cost grid at a certain point
 
@@ -126,7 +126,7 @@ class CostGrid:
         """
         return self.costs.nodes[(x, y, t)]['y_pos']
 
-    def getT_pos(x, y, t):
+    def getT_pos(self, x, y, t):
         """
         Get the t_pos of the cost grid at a certain point
 

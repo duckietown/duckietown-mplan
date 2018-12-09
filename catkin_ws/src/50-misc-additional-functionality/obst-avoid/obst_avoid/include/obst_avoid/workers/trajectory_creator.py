@@ -76,7 +76,7 @@ class TrajectoryCreator(WorkerBase):
 
 
 
-        self.cost_grid_populator = CostGridPopulator()
+        self.cost_grid_populator = CostGridPopulator(self.cost_grid_params, self.max_actor_vel)
         self.cost_grid_solver = CostGridSolver()
         self.actor = Obstacle()
         self.obstacle_list = []

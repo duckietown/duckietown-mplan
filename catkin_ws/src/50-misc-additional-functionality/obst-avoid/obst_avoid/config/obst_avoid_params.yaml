@@ -5,9 +5,9 @@ cost_grid:
     x: 6 # no. of deltas for length
     y: 5 # no. of deltas for width
   delta:
-    time: 1 #[s]
+    time: 1.0 #[s]
     x: 0.2 #[m]
     y: 0.1 #[m]
 
 velocity:
-  max: 0.225s #[m/s] (must be >= max(dy/dt, dx/dt))
+  max: 0.225 #[m/s] (must be >= max(dy/dt, dx/dt))

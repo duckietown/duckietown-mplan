@@ -50,13 +50,15 @@ class CostGridSolver:
         # convert path object
         path_tf = []
         for waypoint in path[1:len(path)-1]: #to cutoff 'S' and 'E'
-            path_tf.append((cost_grid.costs.getX_pos(waypoint), cost_grid.costs.getY_pos(waypoint))
+            path_tf.append((cost_grid.costs.getX_pos(waypoint), cost_grid.costs.getY_pos(waypoint)))
 
         # output solution to trajectory object
+        # TODO LG check this please
         trajectory.start_time = rospy.Time.now()
-        trajectory.duration = cost_grid_params.get('n_t')
+        trajectory.duration = cost_grid_params.get('n_t')*cost_grid_params.get('dt')
         trajectory.ts = cost_grid_params.get('dt')
         trajectory.positions = path_tf
+        print(path_tf)
         trajectory.times = np.linspace(0, 1, len(path_tf))
 
         return trajectory

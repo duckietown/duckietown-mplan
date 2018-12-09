@@ -129,25 +129,32 @@ class TrajectorySampler(WorkerBase):
         # velocity needed to reach target positon within target_time
         vel_set = self.k_vel * math.sqrt((x_set - x_act)**2 + (y_set - y_act)**2) / self.target_time
 
-        # angular error and distance to line between trajectory position and target position
-        if(x_set == x_set_now and y_set == y_set_now):
-            phi_ref = math.atan2(y_set - y_act, x_set - x_act)
-            phi_est = math.atan2(y_act_dot, x_act_dot)
+        # # angular error and distance to line between trajectory position and target position
+        # if(x_set == x_set_now and y_set == y_set_now):
+        #     phi_ref = math.atan2(y_set - y_act, x_set - x_act)
+        #     phi_est = math.atan2(y_act_dot, x_act_dot)
+        #
+        #     d_ref = 0
+        #     d_est = 0
+        #
+        # else:
+        #     phi_ref = math.atan2(y_set - y_set_now, x_set - x_set_now)
+        #     phi_est = math.atan2(y_act_dot, x_act_dot)
+        #
+        #     d_ref = 0
+        #     d_est = math.fabs((y_set - y_set_now) * x_act - (x_set - x_set_now) * y_act + x_set * y_set_now - y_set * x_set_now) / math.sqrt((x_set - x_set_now)**2 + (y_set - y_set_now)**2)
+        #
+        # ref = (6 * d_ref + 1 * phi_ref)
+        # est = (6 * d_est + 1 * phi_est)
+        # err = ref - est
+        # # print('phi_ref: %f, %f', phi_ref, phi_est)
 
-            d_ref = 0
-            d_est = 0
+        d_ref = 0
+        d_est = 0
 
-        else:
-            phi_ref = math.atan2(y_set - y_set_now, x_set - x_set_now)
-            phi_est = math.atan2(y_act_dot, x_act_dot)
+        phi_ref = math.atan2(y_set - y_act, x_set - x_act)
+        phi_est = math.atan2(y_act_dot, x_act_dot)
 
-            d_ref = 0
-            d_est = math.fabs((y_set - y_set_now) * x_act - (x_set - x_set_now) * y_act + x_set * y_set_now - y_set * x_set_now) / math.sqrt((x_set - x_set_now)**2 + (y_set - y_set_now)**2)
-
-        ref = (6 * d_ref + 1 * phi_ref)
-        est = (6 * d_est + 1 * phi_est)
-        err = ref - est
-        # print('phi_ref: %f, %f', phi_ref, phi_est)
         d_err = d_ref-d_est
         phi_err = phi_ref -phi_est
 

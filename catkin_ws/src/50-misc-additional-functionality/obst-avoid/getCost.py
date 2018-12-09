@@ -5,6 +5,7 @@
 ############################################
 
 import sympy as sp
+import math
 
 
 
@@ -215,18 +216,37 @@ def get_street_bound_cost(x_num,y_num,t_num):
 def init_obstacles_fun():
     x = sp.Symbol('x')
     y = sp.Symbol('y')
+    # x_obst = sp.Symbol('x_obst')
+    # y_obst = sp.Symbol('y_obst')
+    # dx_obst = sp.Symbol('dx_obst')
+    # dy_obst = sp.Symbol('dy_obst')
     t = sp.Symbol('t')
 
+    obst_radius = 0.05
+    max_cost = 1 # cost at radius = max_cost/2
+    function_degree = 20
+    x_obst = 0.8
+    y_obst = 0.1
+    dx_obst = 0
+    dy_obst = 0
 
-    print "[init_obstacles_fun] Not yet implemented - generating function for obstacles!"
-    return 0.00001*x**2+0.000001*y
+    obstacles_fun = sp.Function('obstacles_fun')
+    obstacles_fun = 2*max_cost * 2**(-((((x + t*dx_obst - x_obst)**2 + (y + t*dy_obst - y_obst)**2)/obst_radius**2)**(function_degree*obst_radius/2)))
+
+
+    # print "[init_obstacles_fun] Not yet implemented - generating function for obstacles!"
+    # return 0.00001*x**2+0.000001*y
+
+    return obstacles_fun
 
 def get_obstacles_cost(x_num,y_num,t_num):
-    obstacles_fun = init_obstacles_fun()
 
+    obstacles_fun = init_obstacles_fun()
     obstacles_cost = obstacles_fun.subs([(x,x_num),(y,y_num),(t,t_num)])
 
     return obstacles_cost
+
+    # ,(x_obst,x),(y_obst,y),(dx_obst,dx),(dy_obst,dy)
 
 
 ###############################################

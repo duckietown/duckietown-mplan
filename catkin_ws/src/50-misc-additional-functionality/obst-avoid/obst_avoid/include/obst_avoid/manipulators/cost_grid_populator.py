@@ -218,7 +218,7 @@ class CostGridPopulator:
                         next_nodes.append((mask_x, mask_y, k_n + 1))
             active_nodes = next_nodes
 
-    def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel):
+    def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel, marker_array):
         """
         Create a cost grid and populate it according to the obstacles
 
@@ -233,6 +233,8 @@ class CostGridPopulator:
             grid. Entries are 'n_t', 'n_x', 'n_y', 'dt', 'dx', 'dy'
         max_actor_vel: float
             the maximum velocity in [m/s] of a duckiebot
+        marker_array: visualization_msgs/Marker.msg
+            containing all the grid information for plotting
 
         Returns
         -------
@@ -242,7 +244,21 @@ class CostGridPopulator:
         for k in range(cost_grid_params.get('n_t')):
             for i in range(cost_grid_params.get('n_x')):
                 for j in range(cost_grid_params.get('n_y')):
-                    self.cost_grid.setCost(i, j, k, self.getCost(self.cost_grid.getX_pos(i,j,k), self.cost_grid.getY_pos(i,j,k), self.cost_grid.getT_pos(i,j,k), list_of_obstacles))
+                    cost = self.getCost(self.cost_grid.getX_pos(i,j,k), self.cost_grid.getY_pos(i,j,k), self.cost_grid.getT_pos(i,j,k), list_of_obstacles)
+                    self.cost_grid.setCost(i, j, k, cost)
+                    marker_array.color.a = 1.0
+                    marker_array.color.r = 1.0 * cost
+                    marker_array.color.g = 0.0
+                    marker_array.color.b = 0.0
+                    marker_array.pose.position.x = self.cost_grid.getX_pos(i,j,k)
+                    marker_array.pose.position.y = self.cost_grid.getY_pos(i,j,k)
+                    marker_array.pose.position.z = self.cost_grid.getT_pos(i,j,k)
+                    marker_array.scale.x = 0.1
+                    marker_array.scale.y = 0.1
+                    marker_array.scale.z = 0.1
+                    marker_array.type = marker_array.SPHERE
+                    marker_array.header.frame_id = "/map"
+                    marker_array.action = marker_array.ADD
 
         # add weighted edges to graph
         self.connectGraph(self.cost_grid.costs, actor_position.x, actor_position.y, cost_grid_params, max_actor_vel)

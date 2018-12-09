@@ -26,7 +26,24 @@ push_fwd_frac = 0.1
 street_bound_frac = 0.3
 obst_avoid_frac = 0.6
 
+class Obstacle(object):
+    x = 0
+    y = 0
+    x_dot = 0
+    y_dot = 0
+    radius = 0
 
+    # The class "constructor" - It's actually an initializer
+    def __init__(self, x, y, x_dot, y_dot, radius):
+        self.x = x
+        self.y = y
+        self.x_dot = x_dot
+        self.y_dot = y_dot
+        self.radius = radius
+
+def make_obstacle(x, y, x_dot, y_dot, radius):
+    obstacle = Obstacle(x, y, x_dot, y_dot, radius)
+    return obstacle
 
 ############################################
 # HELPER FUNCTIONS
@@ -221,6 +238,16 @@ def init_obstacles_fun():
     # dx_obst = sp.Symbol('dx_obst')
     # dy_obst = sp.Symbol('dy_obst')
     t = sp.Symbol('t')
+
+    # obstacle_list = []
+    #
+    # object.x =
+    #
+    #     new_obstacle = Obstacle()
+    #     new_obstacle.fromMsg(obstacle_msg)
+    #     self.obstacle_list.append(new_obstacle)
+
+    obstacle1 = make_obstacle(0.8,0.1,0,0,0.05)
 
     obst_radius = 0.05
     max_cost = 1 # cost at radius = max_cost/2

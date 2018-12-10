@@ -5,12 +5,9 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /DuckieBots1
         - /DuckieBots1/Namespaces1
-        - /Path1
         - /Path1/Offset1
-        - /Marker1/Namespaces1
-        - /MarkerArray1
+        - /TargetPosition1/Namespaces1
       Splitter Ratio: 0.405555546
     Tree Height: 719
   - Class: rviz/Selection
@@ -65,9 +62,9 @@ Visualization Manager:
       Value: true
     - Class: rviz/Axes
       Enabled: true
-      Length: 1
+      Length: 0.100000001
       Name: Map Origin
-      Radius: 0.100000001
+      Radius: 0.00999999978
       Reference Frame: map
       Value: true
     - Class: rviz/MarkerArray
@@ -104,7 +101,7 @@ Visualization Manager:
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /obst_avoid_viz/trajectory/sampled_point
-      Name: Marker
+      Name: TargetPosition
       Namespaces:
         obst_avoid_viz: true
       Queue Size: 100
@@ -112,12 +109,9 @@ Visualization Manager:
     - Class: rviz/MarkerArray
       Enabled: true
       Marker Topic: /obst_avoid/cost_grid
-      Name: MarkerArray
+      Name: CostGrid
       Namespaces:
-        apriltags: true
         cost_grid: true
-        tiles: true
-        traffic-signs: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -145,25 +139,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 13.0562601
+      Distance: 5.10857201
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 2.55081391
-        Y: 4.80733538
-        Z: 0.965960503
+        X: 2.78356123
+        Y: 0.209013522
+        Z: -0.912048161
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.484797776
+      Pitch: 0.454797626
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.42996454
+      Yaw: 3.28496099
     Saved: ~
 Window Geometry:
   Displays:
@@ -181,5 +175,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1617
-  X: 303
-  Y: 60
+  X: 280
+  Y: 47

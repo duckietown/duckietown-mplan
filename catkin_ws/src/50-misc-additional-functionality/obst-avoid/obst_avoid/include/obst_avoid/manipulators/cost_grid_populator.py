@@ -309,10 +309,10 @@ class CostGridPopulator:
                     marker.type = Marker.SPHERE
                     marker.header.frame_id = "/map"
                     marker.action = Marker.ADD
-                    marker.scale.x = 0.1
-                    marker.scale.y = 0.1
-                    marker.scale.z = 0.1
-                    marker.color.a = 1.0
+                    marker.scale.x = 0.05
+                    marker.scale.y = 0.05
+                    marker.scale.z = 0.05
+                    marker.color.a = 0.5
                     marker.color.r = cost
                     marker.color.g = 0.1
                     marker.color.b = 0.1

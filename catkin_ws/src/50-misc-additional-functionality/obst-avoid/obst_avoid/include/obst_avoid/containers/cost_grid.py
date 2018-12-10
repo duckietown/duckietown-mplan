@@ -16,37 +16,28 @@ class CostGrid:
     n_y: int
         size of cost grid in y direction
 
-    costs = numpy.ndarray<float>
-        n_x x n_y numpy array containing all the weights
-
     """
 
     def __init__(self):
         """
-        Create cost grid of size n_x x n_y
+        Create cost grid with start and end nodes
 
         Parameters
         ----------
-        n_x: int
-            size of cost grid in x direction
+        empty
 
-        n_y: int
-            size of cost grid in y direction
+        Returns
+        -------
+        empty
         """
         self.populated = False
 
         # initialize Graph object
-        self.costs = nx.Graph()
+        self.costs = nx.DiGraph()
 
-        # initialize nodes of Graph object
-        self.costs.add_node((0,0), node_weight=0)   # S
-        self.costs.add_node((-1,1), node_weight=0)  # A
-        self.costs.add_node((1,1), node_weight=0)   # B
-        self.costs.add_node((0,2), node_weight=0)   # E
-
-        # initialize edges of Graph object
-        self.costs.add_weighted_edges_from([((0,0), (-1,1), 0),  \
-            ((0,0), (1,1), 0), ((-1,1), (0,2), 0), ((1,1), (0,2), 0)])
+        # initialize theoretical start and end node (data values unused)
+        self.costs.add_node('S', x_pos=0, y_pos=0, t_pos=0, node_weight=0.0)
+        self.costs.add_node('E', x_pos=0, y_pos=0, t_pos=0, node_weight=0.0)
 
     def __del__(self):
         pass
@@ -54,7 +45,7 @@ class CostGrid:
     def isPopulated(self):
         return self.populated
 
-    def getCost(x, y):
+    def setCost(self, x, y, t, cost):
         """
         Get the value of the cost grid at a certain point
 
@@ -64,10 +55,93 @@ class CostGrid:
             x index of desired cost point
         y: int
             y index of desired cost point
+        t: int
+            t index of desired cost point
+        cost: float
+            cost value of the desired cost point
+
+        Returns
+        -------
+        empty
+        """
+        self.costs.nodes[(x, y, t)]['node_weight'] = cost
+
+    def getCost(self, x, y, t):
+        """
+        Get the value of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
 
         Returns
         -------
         float
             value of the cost grid at desired point
         """
-        return self.costs[x][y]
+        return self.costs.nodes[(x, y, t)]['node_weight']
+
+    def getX_pos(self, x, y, t):
+        """
+        Get the x_pos of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
+
+        Returns
+        -------
+        float
+            x_pos of the cost grid at desired point
+        """
+        return self.costs.nodes[(x, y, t)]['x_pos']
+
+    def getY_pos(self, x, y, t):
+        """
+        Get the y_pos of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
+
+        Returns
+        -------
+        float
+            y_pos of the cost grid at desired point
+        """
+        return self.costs.nodes[(x, y, t)]['y_pos']
+
+    def getT_pos(self, x, y, t):
+        """
+        Get the t_pos of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
+
+        Returns
+        -------
+        float
+            t_pos of the cost grid at desired point
+        """
+        return self.costs.nodes[(x, y, t)]['t_pos']

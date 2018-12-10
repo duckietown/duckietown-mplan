@@ -6,3 +6,4 @@ empy==3.3.2
 numpy==1.11.0
 PyYAML==3.11
 rospkg==1.1.7
+sympy==1.3

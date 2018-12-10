@@ -8,6 +8,7 @@ from obst_avoid.manipulators import CostGridSolver
 from obst_avoid.containers import Obstacle
 from obst_avoid.containers import Trajectory
 
+from visualization_msgs.msg import MarkerArray
 
 
 class TrajectoryCreator(WorkerBase):
@@ -74,9 +75,7 @@ class TrajectoryCreator(WorkerBase):
         }
         self.max_actor_vel = rospy.get_param('velocity/max')
 
-
-
-        self.cost_grid_populator = CostGridPopulator()
+        self.cost_grid_populator = CostGridPopulator(self.cost_grid_params, self.max_actor_vel)
         self.cost_grid_solver = CostGridSolver()
         self.actor = Obstacle()
         self.obstacle_list = []
@@ -104,6 +103,10 @@ class TrajectoryCreator(WorkerBase):
         self.trajectory_pub = rospy.Publisher(
             'obst_avoid/trajectory', dtmsg.TimedPath, queue_size=10)
 
+        self.marker_array_pub = rospy.Publisher(
+            'obst_avoid/cost_grid', MarkerArray, queue_size=10)
+
+
     def actorCb(self, data):
         self.actor.fromMsg(data.moving_object)
 
@@ -129,11 +132,14 @@ class TrajectoryCreator(WorkerBase):
         none
         """
 
+        # for vizualization purposes
+        marker_array_msg = MarkerArray()
+
         # populate the cost grid
-        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel)
+        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel, marker_array_msg)
 
         # solve the cost grid for a trajectory
-        trajectory = self.cost_grid_solver.solve(cost_grid, self.actor)
+        trajectory = self.cost_grid_solver.solve(cost_grid, self.cost_grid_params)
 
         # trajectory = Trajectory()
         # trajectory.start_time = rospy.Time.now()
@@ -147,6 +153,9 @@ class TrajectoryCreator(WorkerBase):
 
         # publish trajectory msg
         self.trajectory_pub.publish(trajectory_msg)
+
+        # publish cost_grid msg
+        self.marker_array_pub.publish(marker_array_msg)
 
     def shutdown(self):
         """

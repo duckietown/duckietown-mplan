@@ -20,7 +20,7 @@
   </node>
   <node name="fleet_planner_wrapper_node" pkg="obst_avoid" type="fleet_planner_wrapper_node.py" output="screen"/>
 
-  <!-- VISUALIZATION NODES -->
+  <!-- VISUALIZATION NODES -->
   <include file="$(find flock_simulator)/launch/visualization.launch">
     <arg name="map_name" value="$(arg map_name)"/>
     <arg name="rviz_config" value="$(arg rviz_config)"/>

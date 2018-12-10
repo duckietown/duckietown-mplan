@@ -1,13 +1,13 @@
 
 cost_grid:
   depth:
-    time: 6
-    x: 6
-    y: 5
+    time: 6 # discrete time steps
+    x: 6 # no. of deltas for length
+    y: 5 # no. of deltas for width
   delta:
-    time: 1 #[s]
+    time: 1.0 #[s]
     x: 0.2 #[m]
     y: 0.1 #[m]
 
 velocity:
-  max: 0.1 #[m/s]
+  max: 0.225 #[m/s] (must be >= max(dy/dt, dx/dt))

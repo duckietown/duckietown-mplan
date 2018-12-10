@@ -259,9 +259,10 @@ class CostGridPopulator:
                     mask_y = j_n + mask_element[1]
                     curr_node = (i_n, j_n, k_n)
                     next_node = (mask_x, mask_y, k_n + 1)
-                    if next_node not in next_nodes and mask_x>=0 and mask_x<=(cost_grid_params.get('n_x')-1) and mask_y>=0 and mask_y<=(cost_grid_params.get('n_y')-1):
+                    if mask_x>=0 and mask_x<=(cost_grid_params.get('n_x')-1) and mask_y>=0 and mask_y<=(cost_grid_params.get('n_y')-1):
                         self.cost_grid.costs.add_weighted_edges_from([(curr_node, next_node, self.getEdgeCost(curr_node, next_node))])
-                        next_nodes.append((mask_x, mask_y, k_n + 1))
+                        if next_node not in next_nodes:
+                            next_nodes.append((mask_x, mask_y, k_n + 1))
             active_nodes = next_nodes
 
     def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel, marker_array):

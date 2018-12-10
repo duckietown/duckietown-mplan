@@ -265,7 +265,7 @@ class CostGridPopulator:
                             next_nodes.append((mask_x, mask_y, k_n + 1))
             active_nodes = next_nodes
 
-    def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel, marker_array):
+    def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel):
         """
         Create a cost grid and populate it according to the obstacles
 
@@ -302,25 +302,7 @@ class CostGridPopulator:
                     t = self.cost_grid.getTpos(i,j,k)
                     cost = self.getCost(x, y, t, list_of_obstacles)
                     self.cost_grid.setCost(i, j, k, cost)
-                    # visualizations of each cost grid element
-                    marker = Marker()
-                    marker.id = id
-                    id +=1
-                    marker.ns = 'cost_grid'
-                    marker.type = Marker.SPHERE
-                    marker.header.frame_id = "/map"
-                    marker.action = Marker.ADD
-                    marker.scale.x = 0.05
-                    marker.scale.y = 0.05
-                    marker.scale.z = 0.05
-                    marker.color.a = 0.5
-                    marker.color.r = cost
-                    marker.color.g = 0.1
-                    marker.color.b = 0.1
-                    marker.pose.position.x = x
-                    marker.pose.position.y = y
-                    marker.pose.position.z = t/10
-                    marker_array.markers.append(marker)
+
 
         # add weighted edges to graph
         self.connectGraph(self.cost_grid.costs, actor_position.x, actor_position.y, cost_grid_params, max_actor_vel)

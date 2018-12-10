@@ -132,11 +132,8 @@ class TrajectoryCreator(WorkerBase):
         none
         """
 
-        # for vizualization purposes
-        marker_array_msg = MarkerArray()
-
         # populate the cost grid
-        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel, marker_array_msg)
+        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel)
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.cost_grid_params)
@@ -155,8 +152,8 @@ class TrajectoryCreator(WorkerBase):
         self.trajectory_pub.publish(trajectory_msg)
 
         # publish cost_grid msg
-        
-        self.marker_array_pub.publish(marker_array_msg)
+        cost_grid_marker = cost_grid.toVizMsg(self.cost_grid_params)
+        self.marker_array_pub.publish(cost_grid_marker)
 
     def shutdown(self):
         """

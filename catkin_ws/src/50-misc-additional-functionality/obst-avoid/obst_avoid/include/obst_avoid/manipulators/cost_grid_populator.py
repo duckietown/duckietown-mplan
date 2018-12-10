@@ -297,9 +297,9 @@ class CostGridPopulator:
         for k in range(n_t):
             for i in range(n_x):
                 for j in range(n_y):
-                    x = self.cost_grid.getX_pos(i,j,k)
-                    y = self.cost_grid.getY_pos(i,j,k)
-                    t = self.cost_grid.getT_pos(i,j,k)
+                    x = self.cost_grid.getXPos(i,j,k)
+                    y = self.cost_grid.getYPos(i,j,k)
+                    t = self.cost_grid.getTpos(i,j,k)
                     cost = self.getCost(x, y, t, list_of_obstacles)
                     self.cost_grid.setCost(i, j, k, cost)
                     # visualizations of each cost grid element
@@ -328,6 +328,7 @@ class CostGridPopulator:
         self.cost_grid.populated = True
         return self.cost_grid
 
+
     def getCost(self, x_rw, y_rw, t_rw, obstacle_list):
         """
         return the value of the costfunction at a specific time point
@@ -354,6 +355,8 @@ class CostGridPopulator:
         total_fun = self.push_fwd_frac * self.push_fwd_fun + self.street_bound_frac *self.street_bound_fun #+ self.obst_avoid_frac * self.obstacles_fun
 
         cost = total_fun.subs([(x, x_rw),(y,y_rw),(t,t_rw)])
+        for elem in obstacle_list:
+            cost += elem.getCost(x_rw,y_rw,t_rw)
 
         return cost
 
@@ -373,9 +376,9 @@ class CostGridPopulator:
         -------
         float : the requested cost
         """
-        curr_delta_x = self.cost_grid.getX_pos(next_node[0], next_node[1], next_node[2])-self.cost_grid.getX_pos(curr_node[0], curr_node[1], curr_node[2])
+        curr_delta_x = self.cost_grid.getXPos(next_node[0], next_node[1], next_node[2])-self.cost_grid.getXPos(curr_node[0], curr_node[1], curr_node[2])
 
-        curr_delta_y = self.cost_grid.getY_pos(next_node[0], next_node[1], next_node[2])-self.cost_grid.getY_pos(curr_node[0], curr_node[1], curr_node[2])
+        curr_delta_y = self.cost_grid.getYPos(next_node[0], next_node[1], next_node[2])-self.cost_grid.getYPos(curr_node[0], curr_node[1], curr_node[2])
 
         norm_factor = 0.0; # depends on the order of magnitude of the node cost function
         distance = norm_factor * math.sqrt(curr_delta_x**2 + curr_delta_y**2)

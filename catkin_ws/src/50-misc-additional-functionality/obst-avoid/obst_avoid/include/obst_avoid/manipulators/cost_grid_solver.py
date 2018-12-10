@@ -52,7 +52,7 @@ class CostGridSolver:
         # convert path object
         path_tf = []
         for waypoint in path[1:len(path)-1]: #to cutoff 'S' and 'E'
-            path_tf.append((cost_grid.getX_pos(waypoint[0], waypoint[1], waypoint[2]), cost_grid.getY_pos(waypoint[0], waypoint[1], waypoint[2])))
+            path_tf.append((cost_grid.getXPos(waypoint[0], waypoint[1], waypoint[2]), cost_grid.getYPos(waypoint[0], waypoint[1], waypoint[2])))
 
         # output solution to trajectory object
         # TODO LG check this please

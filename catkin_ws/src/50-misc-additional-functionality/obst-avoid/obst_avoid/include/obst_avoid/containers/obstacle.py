@@ -1,3 +1,5 @@
+import sympy as sp
+import math
 from duckietown_msgs.msg import MovingObject
 
 class Obstacle:
@@ -26,7 +28,7 @@ class Obstacle:
         y-velocity of the obstacle
     """
 
-    def __init__(self, x=0, y=0, r=0, x_dot=0, y_dot=0):
+    def __init__(self, x=0, y=0, r=0.1, x_dot=0, y_dot=0):
         """
         Construct an obstacles with the given parameters
 
@@ -53,8 +55,29 @@ class Obstacle:
         self.x_dot = x_dot
         self.y_dot = y_dot
 
+        self.init_obstacles_fun()
+
     def __del__(self):
         pass
+
+    def init_obstacles_fun(self):
+        x = sp.Symbol('x')
+        y = sp.Symbol('y')
+        t = sp.Symbol('t')
+
+        max_cost = 2000 # cost at radius = max_cost/2
+        function_degree = 20
+
+        self.obstacles_fun = sp.Function('obstacles_fun')
+        self.obstacles_fun = 2*max_cost * 2**(-((((x + t*self.x_dot - self.x)**2 + (y + t*self.y_dot - self.y)**2)/self.radius**2)**(function_degree*self.radius/2)))
+        # self.obstacles_fun = x**2+y+t/self.x
+
+        # DEBUG VISUALIZATIONS
+        # print "init obstacle fun"
+        # print self.obstacles_fun
+        # self.obstacles_fun.subs([(t,10)])
+        # sp.plotting.plot3d(self.obstacles_fun, (x, 0, 1.5), (y, -0.2, 0.2), xlim=[-0.1,1.5], ylim=[-0.3,0.3])
+
 
     def toMsg(self):
         """
@@ -94,6 +117,7 @@ class Obstacle:
         self.x_dot = msg.twist.x
         self.y_dot = msg.twist.y
         self.radius = msg.safety_radius
+        self.init_obstacles_fun()
 
     def getState(self):
         """
@@ -116,22 +140,24 @@ class Obstacle:
         """
         return self.x, self.y, self.x_dot, self.y_dot
 
-    def getCost(self, x, y, t):
+    def getCost(self, x_num, y_num, t_num):
         """
         return the value of the cost created by this obstacle at a specific time point
 
         Parameters
         ----------
-        x : float
+        x_num : float
             x position of the requested cost value
-        y : float
+        y_num : float
             y position of the requested cost value
-        t : float
+        t_num : float
             time of requested cost value
 
         Returns
         -------
         float : the requested cost
         """
-        print('[containers.Obstacle.getCost] WARNING: not implemented')
-        return 0
+        x = sp.Symbol('x')
+        y = sp.Symbol('y')
+        t = sp.Symbol('t')
+        return self.obstacles_fun.subs([(x,x_num),(y,y_num),(t,t_num)])

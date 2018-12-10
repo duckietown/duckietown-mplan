@@ -155,6 +155,7 @@ class TrajectoryCreator(WorkerBase):
         self.trajectory_pub.publish(trajectory_msg)
 
         # publish cost_grid msg
+        
         self.marker_array_pub.publish(marker_array_msg)
 
     def shutdown(self):

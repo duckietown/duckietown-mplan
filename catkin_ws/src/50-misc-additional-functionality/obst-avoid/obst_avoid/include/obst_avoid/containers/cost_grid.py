@@ -86,7 +86,7 @@ class CostGrid:
         """
         return self.costs.nodes[(x, y, t)]['node_weight']
 
-    def getX_pos(self, x, y, t):
+    def getXPos(self, x, y, t):
         """
         Get the x_pos of the cost grid at a certain point
 
@@ -106,7 +106,7 @@ class CostGrid:
         """
         return self.costs.nodes[(x, y, t)]['x_pos']
 
-    def getY_pos(self, x, y, t):
+    def getYPos(self, x, y, t):
         """
         Get the y_pos of the cost grid at a certain point
 
@@ -126,7 +126,7 @@ class CostGrid:
         """
         return self.costs.nodes[(x, y, t)]['y_pos']
 
-    def getT_pos(self, x, y, t):
+    def getTpos(self, x, y, t):
         """
         Get the t_pos of the cost grid at a certain point
 
@@ -145,3 +145,6 @@ class CostGrid:
             t_pos of the cost grid at desired point
         """
         return self.costs.nodes[(x, y, t)]['t_pos']
+
+    def toVizMsg(self):
+        return marker_array_msg

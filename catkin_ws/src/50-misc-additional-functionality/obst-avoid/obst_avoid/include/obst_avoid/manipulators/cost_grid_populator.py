@@ -12,32 +12,51 @@ class CostGridPopulator:
     """Populates the cost grid from the existing objects"""
 
     def init_push_fwd_fun(self, cost_grid_params, max_actor_vel):
-        # parameters needed, add to global file TODO
-        push_fwd_stand_cost = 1.0
-        push_fwd_allow_speed_fract = 0.3
+        """
+        Creates a symbolic function for the push forward component of the
+        cost function
+
+        Parameters
+        ----------
+        cost_grid_params: dictionary
+            a dictionary containing the cost grid dimensions
+        max_actor_vel: float
+            target velocity of duckiebot
+        Returns
+        -------
+        n.a.
+        """
+
+        # TODO
+        # - make adaptive for curved streets
+        # - try simpler function, 5th order might be an overkill
+        # - add parameters to centralized file
+
+        # local parameters needed
+        dt = cost_grid_params.get('dt')
+        n_t = cost_grid_params.get('n_t')
+
+        # TODO - add to parameter file
+        push_fwd_stand_cost = 1.0 # cost for standing still
+        push_fwd_allow_speed_fract = 0.1 # 10% above max speed, only for viz
 
         # Parameters for cost quintic
-        x_opt = cost_grid_params.get('dt')*cost_grid_params.get('n_t')* max_actor_vel     # optimal position - max speed for the whole time interval
-        x_max = (1.0 + push_fwd_allow_speed_fract) *cost_grid_params.get('dt')*cost_grid_params.get('n_t')  * max_actor_vel     # distance after which cost goes to infinity - vehicle can not physically drive faster than max speed
+        x_opt = dt*n_t* max_actor_vel     # optimal position - max speed for the whole time interval
+        x_max = (1.0 + push_fwd_allow_speed_fract) *dt*n_t * max_actor_vel     # distance after which cost shpuld go to infinity - vehicle can not physically drive faster than max speed
 
         # one dimensional 5th order polynomial is used to model the cake
-        # TODO: try CUBIC - should be enough...
         x = sp.Symbol('x')
         y = sp.Symbol('y')
-
         a = sp.Symbol('a')
         b = sp.Symbol('b')
         c = sp.Symbol('c')
         d = sp.Symbol('d')
         e = sp.Symbol('e')
         f = sp.Symbol('f')
-
         g = sp.Function('g')
         g_dot = sp.Function('g_dot')
         g_dot_dot = sp.Function('g_dot_dot')
-
         g = a * x**5 + b * x**4 + c * x**3 + d * x**2+ e * x + f
-
         g_dot = sp.diff(g,x)
         g_dot_dot = sp.diff(g_dot,x)
 
@@ -51,86 +70,108 @@ class CostGridPopulator:
 
         # solve system of equations
         results = sp.solve([eq1, eq2, eq3, eq4, eq5, eq6],[a,b,c,d,e,f])
-
         a_num = results[a]
         b_num = results[b]
         c_num = results[c]
         d_num = results[d]
         e_num = results[e]
         f_num = results[f]
-
         push_fwd_fun = sp.Function('push_fwd_fun')
         push_fwd_fun = g.subs([(a,a_num), (b,b_num), (c,c_num), (d,d_num), (e,e_num), (f,f_num)])
 
+        # DEBUG do not delete
+        # print push_fwd_fun
+        # print "x_opt: {x_opt}, x_max: {x_max}".format(x_opt = x_opt,x_max = x_max)
+        # sp.plotting.plot3d(push_fwd_fun, (x, 0, x_max), (y, -0.2, 0.2), xlim=[-0.1, x_max*1.5], ylim=[-0.3,0.3])
 
+        # safe
         self.push_fwd_fun = push_fwd_fun
         self.push_fwd_fun_type = "straight"
 
         pass
 
     def init_street_bound_fun(self, cost_grid_params, max_actor_vel):
+        """
+        Creates a symbolic function for the street bound and correct lane
+        following component of the cost function
 
-            # parameters needed, add to global file TODO
-            street_bound_cost_max = 1
+        Parameters
+        ----------
+        cost_grid_params: dictionary
+            a dictionary containing the cost grid dimensions
+        max_actor_vel: float
+            target velocity of duckiebot
+        Returns
+        -------
+        n.a.
+        """
 
-            # Parameters for 4th order polynomial
-            y_opt_lane = -(cost_grid_params.get('n_y')-1)/4.0*cost_grid_params.get('dt')
-            y_other_lane = -y_opt_lane
-            y_left_boarder = -(cost_grid_params.get('n_y')-1)/2.0*cost_grid_params.get('dt')
-            y_right_boarder = (cost_grid_params.get('n_y')-1)/2.0*cost_grid_params.get('dt')
+        # TODO
+        # - make adaptive for curved streets
+        # - try simpler function, 6th order might be an overkill
+        # - add parameters to centralized file
 
-            # one dimensional 6th order polynomial is used to model the straight street
-            x = sp.Symbol('x')
-            y = sp.Symbol('y')
+        # local parameters needed
+        dy = cost_grid_params.get('dy')
+        n_y = cost_grid_params.get('n_y')
 
-            a = sp.Symbol('a')
-            b = sp.Symbol('b')
-            c = sp.Symbol('c')
-            d = sp.Symbol('d')
-            e = sp.Symbol('e')
-            f = sp.Symbol('f')
-            g = sp.Symbol('g')
+        # parameters needed, add to global file TODO
+        street_bound_cost_max = 1
 
-            params = [a,b,c,d,e,f,g]
+        # Parameters for 4th order polynomial
+        y_opt_lane = -(n_y-1)/4.0*dy
+        y_other_lane = -y_opt_lane
+        y_left_boarder = -(n_y-1)/2.0*dy
+        y_right_boarder = (n_y-1)/2.0*dy
 
-            h = sp.Function('h')
-            h_dot = sp.Function('h_dot')
-            h_dot_dot = sp.Function('h_dot_dot')
+        # one dimensional 6th order polynomial is used to model the straight street
+        x = sp.Symbol('x')
+        y = sp.Symbol('y')
+        a = sp.Symbol('a')
+        b = sp.Symbol('b')
+        c = sp.Symbol('c')
+        d = sp.Symbol('d')
+        e = sp.Symbol('e')
+        f = sp.Symbol('f')
+        g = sp.Symbol('g')
+        params = [a,b,c,d,e,f,g]
+        h = sp.Function('h')
+        h_dot = sp.Function('h_dot')
+        h_dot_dot = sp.Function('h_dot_dot')
+        h = a * y**6 + b * y**5 + c * y**4 + d * y**3 + e * y**2 + f * y + g
+        h_dot = sp.diff(h,y)
+        h_dot_dot = sp.diff(h_dot,y)
 
-            h = a * y**6 + b * y**5 + c * y**4 + d * y**3 + e * y**2 + f * y + g
+        # equations:
+        eq1 = sp.Eq(h.subs(y,y_opt_lane), 0) # diff should be 0 at beginning
+        eq2 = sp.Eq(h_dot.subs(y,y_opt_lane), 0) # diff should be 0 at beginning
+        eq3 = sp.Eq(h.subs(y,y_other_lane), 1) # 0 cost at optimal distance
+        eq4 = sp.Eq(h_dot.subs(y,y_other_lane), 0) # diff should be 0 at beginning
+        eq5 = sp.Eq(h.subs(y,0), 0.5) # diff should be 0 at beginning
+        eq6 = sp.Eq(h.subs(y,y_left_boarder), 1) # 0 cost at optimal distance
+        eq7 = sp.Eq(h.subs(y,y_right_boarder), 2) # 0 cost at optimal distance
 
-            h_dot = sp.diff(h,y)
-            h_dot_dot = sp.diff(h_dot,y)
+        # solve system of equations
+        results = sp.solve([eq1, eq2, eq3, eq4, eq5, eq6, eq7],[a,b,c,d,e,f,g])
+        a_num = results[a]
+        b_num = results[b]
+        c_num = results[c]
+        d_num = results[d]
+        e_num = results[e]
+        f_num = results[f]
+        g_num = results[g]
+        street_bound_cost_fun = sp.Function('street_bound_cost_fun')
+        street_bound_cost_fun = h.subs([(a,a_num), (b,b_num), (c,c_num), (d,d_num), (e,e_num), (f,f_num), (g,g_num)])
 
-            # equations:
-            eq1 = sp.Eq(h.subs(y,y_opt_lane), 0) # diff should be 0 at beginning
-            eq2 = sp.Eq(h_dot.subs(y,y_opt_lane), 0) # diff should be 0 at beginning
-            eq3 = sp.Eq(h.subs(y,y_other_lane), 1) # 0 cost at optimal distance
-            eq4 = sp.Eq(h_dot.subs(y,y_other_lane), 0) # diff should be 0 at beginning
-            eq5 = sp.Eq(h.subs(y,0), 0.5) # diff should be 0 at beginning
-            eq6 = sp.Eq(h.subs(y,y_left_boarder), 1) # 0 cost at optimal distance
-            eq7 = sp.Eq(h.subs(y,y_right_boarder), 2) # 0 cost at optimal distance
+        # DEBUG VISUALIZATIONS
+        # print "y_opt_lane: {y_opt_lane}, y_other_lane: {y_other_lane}, y_left_boarder: {y_left_boarder}, y_right_boarder: {y_right_boarder}".format(y_opt_lane = y_opt_lane, y_other_lane = y_other_lane, y_left_boarder = y_left_boarder,y_right_boarder = y_right_boarder)
+        # print street_bound_cost_fun
+        # sp.plotting.plot3d(street_bound_cost_fun, (x, 0, 1.5), (y, y_left_boarder, y_right_boarder), xlim=[-0.1,1.5], ylim=[y_left_boarder-0.1,y_right_boarder+0.1])
 
-            # solve system of equations
-            results = sp.solve([eq1, eq2, eq3, eq4, eq5, eq6, eq7],[a,b,c,d,e,f,g])
+        self.street_bound_fun = street_bound_cost_fun
+        self.street_bound_fun_type = "straight"
 
-            # print results
-            a_num = results[a]
-            b_num = results[b]
-            c_num = results[c]
-            d_num = results[d]
-            e_num = results[e]
-            f_num = results[f]
-            g_num = results[g]
-
-
-            street_bound_cost_fun = sp.Function('street_bound_cost_fun')
-            street_bound_cost_fun = h.subs([(a,a_num), (b,b_num), (c,c_num), (d,d_num), (e,e_num), (f,f_num), (g,g_num)])
-
-            self.street_bound_fun = street_bound_cost_fun
-            self.street_bound_fun_type = "straight"
-
-            pass
+        pass
 
     def __init__(self, cost_grid_params, max_actor_vel):
         """
@@ -272,9 +313,9 @@ class CostGridPopulator:
                     marker.scale.y = 0.1
                     marker.scale.z = 0.1
                     marker.color.a = 1.0
-                    marker.color.r = 3 * cost
-                    marker.color.g = 0.0
-                    marker.color.b = 0.0
+                    marker.color.r = cost
+                    marker.color.g = 0.1
+                    marker.color.b = 0.1
                     marker.pose.position.x = x
                     marker.pose.position.y = y
                     marker.pose.position.z = t/10

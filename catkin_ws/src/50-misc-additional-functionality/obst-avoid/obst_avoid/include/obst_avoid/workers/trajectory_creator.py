@@ -1,6 +1,9 @@
 import rospy
 from std_msgs.msg import Empty
 import duckietown_msgs.msg as dtmsg
+import os
+import numpy as np
+import tf
 
 from worker_base import WorkerBase
 from obst_avoid.manipulators import CostGridPopulator
@@ -8,7 +11,7 @@ from obst_avoid.manipulators import CostGridSolver
 from obst_avoid.containers import Obstacle
 from obst_avoid.containers import Trajectory
 
-from visualization_msgs.msg import MarkerArray
+from visualization_msgs.msg import MarkerArray, Marker
 
 
 class TrajectoryCreator(WorkerBase):
@@ -78,6 +81,10 @@ class TrajectoryCreator(WorkerBase):
         self.cost_grid_solver = CostGridSolver()
         self.actor = Obstacle()
         self.obstacle_list = []
+        marker = Marker()
+        marker.ns='tiles'
+        self.map = MarkerArray()
+        self.map.markers.append(marker)
 
     def initIO(self):
         """
@@ -98,6 +105,9 @@ class TrajectoryCreator(WorkerBase):
         self.obstacle_sub = rospy.Subscriber(
             'obst_avoid/obstacles', dtmsg.Obstacles, self.obstacleCb)
 
+        self.map_sub = rospy.Subscriber(
+            'duckietown_map', MarkerArray, self.mapCb)
+
         self.trajectory_pub = rospy.Publisher(
             'obst_avoid/trajectory', dtmsg.TimedPath, queue_size=10)
 
@@ -115,6 +125,36 @@ class TrajectoryCreator(WorkerBase):
 
             self.obstacle_list.append(new_obstacle)
 
+    def mapCb(self, data):
+        self.map = data
+
+    def parseMap(self):
+        # find the closest tile and return its position and orientation
+        pos = []
+        orientation = []
+        type = []
+        for elem in self.map.markers:
+            if elem.ns == 'tiles':
+                name = os.path.basename(os.path.normpath(elem.mesh_resource))
+                if name != 'asphalt.dae':
+                    quaternion = [elem.pose.orientation.x, elem.pose.orientation.y, elem.pose.orientation.z, elem.pose.orientation.w]
+                    yaw = tf.transformations.euler_from_quaternion(quaternion)[2]
+                    orientation.append(yaw)
+                    pos.append([elem.pose.position.x, elem.pose.position.y])
+                    type.append(name)
+
+        argmin = self.findClosestTile(pos)
+        x = pos[argmin][0]
+        y = pos[argmin][1]
+        theta = orientation[argmin]
+        return [x, y, theta+1.574], type[argmin]
+
+    def findClosestTile(self, tile_positions):
+        tile_positions = np.asarray(tile_positions)
+        deltas = tile_positions - [self.actor.x, self.actor.y]
+        dist_2 = np.einsum('ij,ij->i', deltas, deltas)
+        return np.argmin(dist_2)
+
     def advance(self, Ts=1.0):
         """
         Grabs the trajectory object, stored in self.trajectory and samples it.
@@ -131,7 +171,8 @@ class TrajectoryCreator(WorkerBase):
         """
 
         # populate the cost grid
-        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel)
+        origin, type = self.parseMap()
+        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel, origin)
         print('populated')
 
         # solve the cost grid for a trajectory
@@ -155,7 +196,7 @@ class TrajectoryCreator(WorkerBase):
         cost_grid_marker = cost_grid.toVizMsg(self.cost_grid_params)
         self.cost_grid_viz_pub.publish(cost_grid_marker)
         print('published2')
-        
+
     def shutdown(self):
         """
         Clean up class before process end.

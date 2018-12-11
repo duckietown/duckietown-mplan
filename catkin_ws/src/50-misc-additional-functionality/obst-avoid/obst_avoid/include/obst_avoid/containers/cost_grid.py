@@ -38,8 +38,8 @@ class CostGrid:
         self.costs = nx.DiGraph()
 
         # initialize theoretical start and end node (data values unused)
-        self.costs.add_node('S', x_pos=0, y_pos=0, t_pos=0, node_weight=0.0)
-        self.costs.add_node('E', x_pos=0, y_pos=0, t_pos=0, node_weight=0.0)
+        self.costs.add_node('S', x_pos=0.0, x_world=0.0, y_pos=0.0, y_world=0.0, t_pos=0.0, node_weight=0.0)
+        self.costs.add_node('E', x_pos=0.0, x_world=0.0, y_pos=0.0, y_world=0.0, t_pos=0.0, node_weight=0.0)
 
     def __del__(self):
         pass
@@ -67,7 +67,6 @@ class CostGrid:
         empty
         """
         self.costs.nodes[(x, y, t)]['node_weight'] = cost
-
     def getCost(self, x, y, t):
         """
         Get the value of the cost grid at a certain point
@@ -88,9 +87,29 @@ class CostGrid:
         """
         return self.costs.nodes[(x, y, t)]['node_weight']
 
+    def setXPos(self, x, y, t, x_pos):
+        """
+        Set the x_pos of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
+        x_pos: float
+            x_pos value of the desired cost point
+
+        Returns
+        -------
+        empty
+        """
+        self.costs.nodes[(x, y, t)]['x_pos'] = x_pos
     def getXPos(self, x, y, t):
         """
-        Get the x_pos of the cost grid at a certain point
+        Get the x_pos of the cost grid at a certain node in the cost grid frame
 
         Parameters
         ----------
@@ -108,9 +127,69 @@ class CostGrid:
         """
         return self.costs.nodes[(x, y, t)]['x_pos']
 
+    def setXWorld(self, x, y, t, x_world):
+        """
+        Set the x_world of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
+        x_world: float
+            x_world value of the desired cost point
+
+        Returns
+        -------
+        empty
+        """
+        self.costs.nodes[(x, y, t)]['x_world'] = x_world
+    def getXWorld(self, x, y, t):
+        """
+        Get the x_world of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
+
+        Returns
+        -------
+        float
+            x_world of the cost grid at desired point
+        """
+        return self.costs.nodes[(x, y, t)]['x_world']
+
+    def setYPos(self, x, y, t, y_pos):
+        """
+        Set the y_pos of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
+        y_pos: float
+            y_pos value of the desired cost point
+
+        Returns
+        -------
+        empty
+        """
+        self.costs.nodes[(x, y, t)]['y_pos'] = y_pos
     def getYPos(self, x, y, t):
         """
-        Get the y_pos of the cost grid at a certain point
+        Get the y_pos of the cost grid at a certain node in the cost grid frame
 
         Parameters
         ----------
@@ -128,7 +207,67 @@ class CostGrid:
         """
         return self.costs.nodes[(x, y, t)]['y_pos']
 
-    def getTpos(self, x, y, t):
+    def setYWorld(self, x, y, t, y_world):
+        """
+        Set the y_world of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
+        y_world: float
+            y_world value of the desired cost point
+
+        Returns
+        -------
+        empty
+        """
+        self.costs.nodes[(x, y, t)]['y_world'] = y_world
+    def getYWorld(self, x, y, t):
+        """
+        Get the y_world of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
+
+        Returns
+        -------
+        float
+            y_world of the cost grid at desired point
+        """
+        return self.costs.nodes[(x, y, t)]['y_world']
+
+    def setTPos(self, x, y, t, t_pos):
+        """
+        Get the t_pos value of the cost grid at a certain point
+
+        Parameters
+        ----------
+        x: int
+            x index of desired cost point
+        y: int
+            y index of desired cost point
+        t: int
+            t index of desired cost point
+        t_pos: float
+            t_pos value of the desired cost point
+
+        Returns
+        -------
+        empty
+        """
+        self.costs.nodes[(x, y, t)]['t_pos'] = t_pos
+    def getTPos(self, x, y, t):
         """
         Get the t_pos of the cost grid at a certain point
 
@@ -176,9 +315,9 @@ class CostGrid:
                     marker.color.r = cost
                     marker.color.g = 0.1
                     marker.color.b = 0.1
-                    marker.pose.position.x = self.getXPos(i,j,k)
-                    marker.pose.position.y = self.getYPos(i,j,k)
-                    marker.pose.position.z = self.getTpos(i,j,k)/10
+                    marker.pose.position.x = self.getXWorld(i,j,k)
+                    marker.pose.position.y = self.getYWorld(i,j,k)
+                    marker.pose.position.z = self.getTPos(i,j,k)/10
 
                     marker_array_msg.markers.append(marker)
 

@@ -28,4 +28,5 @@
   <node name="duck_viz" pkg="obst_avoid_viz" type="duck_viz_node" output="screen"/>
   <node name="path_viz" pkg="obst_avoid_viz" type="path_viz_node.py" output="screen"/>
 
+
 </launch>

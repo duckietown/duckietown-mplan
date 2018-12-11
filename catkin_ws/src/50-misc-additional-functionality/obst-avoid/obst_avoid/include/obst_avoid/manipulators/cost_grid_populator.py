@@ -34,14 +34,9 @@ class CostGridPopulator:
         # create cost_grid object
         self.cost_grid = CostGrid()
 
-        # add nodes to cost_grid object
-        for k in range(cost_grid_params.get('n_t')):
-            for i in range(cost_grid_params.get('n_x')):
-                for j in range(cost_grid_params.get('n_y')):
-                    x_pos=round(i*cost_grid_params.get('dx'),2)
-                    y_pos=round((j-(cost_grid_params.get('n_y')-1)/2.0)*cost_grid_params.get('dy'), 2) # for centered coordinate system
-                    t_pos=k*cost_grid_params.get('dt')
-                    self.cost_grid.costs.add_node((i, j, k), x_pos=x_pos, y_pos=y_pos, t_pos=t_pos, node_weight=0.0)
+        #  fill graph with nodes
+        self.fillGraph(cost_grid_params)
+
 
     def __del__(self):
         pass
@@ -208,6 +203,28 @@ class CostGridPopulator:
 
                 pass
 
+    def fillGraph(self, cost_grid_params):
+        """
+        Fill the networkx graph of the cost grid with nodes
+
+        Parameters
+        ----------
+        cost_grid_params: dictionary
+            a python dictionary containing the size and resolution of the cost
+            grid. Entries are 'n_t', 'n_x', 'n_y', 'dt', 'dx', 'dy'
+        Returns
+        -------
+
+        """
+        # add nodes to cost_grid object
+        for k in range(cost_grid_params.get('n_t')):
+            for i in range(cost_grid_params.get('n_x')):
+                for j in range(cost_grid_params.get('n_y')):
+                    x_pos=round(i*cost_grid_params.get('dx'),2)
+                    y_pos=round((j-(cost_grid_params.get('n_y')-1)/2.0)*cost_grid_params.get('dy'), 2) # for centered coordinate system
+                    t_pos=k*cost_grid_params.get('dt')
+                    self.cost_grid.costs.add_node((i, j, k), x_pos=x_pos, x_world=x_pos, y_pos=y_pos, y_world=y_pos, t_pos=t_pos, node_weight=0.0)
+
     def connectGraph(self, graph, actor_x, actor_y, cost_grid_params, max_actor_vel):
         """
         connect the graph of an obstacle grid
@@ -265,7 +282,7 @@ class CostGridPopulator:
                             next_nodes.append((mask_x, mask_y, k_n + 1))
             active_nodes = next_nodes
 
-    def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel):
+    def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel, origin):
         """
         Create a cost grid and populate it according to the obstacles
 
@@ -293,15 +310,28 @@ class CostGridPopulator:
         n_y = cost_grid_params.get('n_y')
         id = 1
 
+        # TODO fill these with mid position of street
+        # transform between cost-grid frame and world frame. These are cost grid origin positions in world frame
+        x_origin = origin[0]
+        y_origin = origin[1]
+        theta_origin = origin[2]
+
         # add weighted nodes to cost_grid object
         for k in range(n_t):
             for i in range(n_x):
                 for j in range(n_y):
+                    # get temporal and spatial position of current node
                     x = self.cost_grid.getXPos(i,j,k)
                     y = self.cost_grid.getYPos(i,j,k)
-                    t = self.cost_grid.getTpos(i,j,k)
-                    cost = self.getCost(x, y, t, list_of_obstacles)
+                    t = self.cost_grid.getTPos(i,j,k)
+
+                    # calculate cost for node
+                    cost = self.calculateCost(x, y, t, list_of_obstacles)
+
+                    # set cost of node and world position of node, world position of node is actor position + node position in cost grid frame
                     self.cost_grid.setCost(i, j, k, cost)
+                    self.cost_grid.setXWorld(i, j, k, x_origin + math.sin(theta_origin)*x-math.cos(theta_origin)*y)
+                    self.cost_grid.setYWorld(i, j, k, y_origin + math.cos(theta_origin)*x+math.sin(theta_origin)*y)
 
 
         # add weighted edges to graph
@@ -310,7 +340,7 @@ class CostGridPopulator:
         self.cost_grid.populated = True
         return self.cost_grid
 
-    def getCost(self, x_rw, y_rw, t_rw, obstacle_list):
+    def calculateCost(self, x_rw, y_rw, t_rw, obstacle_list):
         """
         return the value of the costfunction at a specific time point
 

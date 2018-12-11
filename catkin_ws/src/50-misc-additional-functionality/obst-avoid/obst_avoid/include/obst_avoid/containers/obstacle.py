@@ -60,6 +60,9 @@ class Obstacle:
     def __del__(self):
         pass
 
+    def __str__(self):
+        return 'position: ({} / {}) \n velocity: ({} / {}) \n radius: {}'.format(self.x, self.y, self.x_dot, self.y_dot, self.radius)
+
     def init_obstacles_fun(self):
         x = sp.Symbol('x')
         y = sp.Symbol('y')

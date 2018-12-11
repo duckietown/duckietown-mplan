@@ -49,8 +49,11 @@ def fleetPlannerCb(msg):
             obstacle.pose.x = duck.pose.x
             obstacle.pose.y = duck.pose.y
             obstacle.pose.theta = duck.pose.theta
-            obstacle.twist.x = duck.velocity.linear.x
-            obstacle.twist.y = duck.velocity.linear.y
+            lx = duck.velocity.linear.x
+            ly = duck.velocity.linear.y
+            theta = duck.pose.theta
+            obstacle.twist.x = math.cos(theta)*lx-math.sin(theta)*ly
+            obstacle.twist.y = math.sin(theta)*lx+math.cos(theta)*ly
             obstacle.safety_radius = duckie_radius
             obstacle_list.append(obstacle)
 

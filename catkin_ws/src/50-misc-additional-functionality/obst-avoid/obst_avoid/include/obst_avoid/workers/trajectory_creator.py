@@ -43,7 +43,6 @@ class TrajectoryCreator(WorkerBase):
         super(TrajectoryCreator, self).__init__(standalone, frequency)
         rospy.loginfo('[TrajectoryCreator.__init__] init complete')
 
-
     def __del__(self):
         """
         Call destructor method from base class.
@@ -80,7 +79,6 @@ class TrajectoryCreator(WorkerBase):
         self.actor = Obstacle()
         self.obstacle_list = []
 
-
     def initIO(self):
         """
         Instantiate all input / output behaviour of worker. This mainly
@@ -103,9 +101,8 @@ class TrajectoryCreator(WorkerBase):
         self.trajectory_pub = rospy.Publisher(
             'obst_avoid/trajectory', dtmsg.TimedPath, queue_size=10)
 
-        self.marker_array_pub = rospy.Publisher(
+        self.cost_grid_viz_pub = rospy.Publisher(
             'obst_avoid/cost_grid', MarkerArray, queue_size=10)
-
 
     def actorCb(self, data):
         self.actor.fromMsg(data.moving_object)
@@ -115,6 +112,7 @@ class TrajectoryCreator(WorkerBase):
         for obstacle_msg in list(data.moving_objects):
             new_obstacle = Obstacle()
             new_obstacle.fromMsg(obstacle_msg)
+
             self.obstacle_list.append(new_obstacle)
 
     def advance(self, Ts=1.0):
@@ -134,10 +132,11 @@ class TrajectoryCreator(WorkerBase):
 
         # populate the cost grid
         cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel)
+        print('populated')
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.cost_grid_params)
-
+        print('solved')
         # trajectory = Trajectory()
         # trajectory.start_time = rospy.Time.now()
         # trajectory.duration = 50
@@ -150,11 +149,13 @@ class TrajectoryCreator(WorkerBase):
 
         # publish trajectory msg
         self.trajectory_pub.publish(trajectory_msg)
+        print('published1')
 
         # publish cost_grid msg
         cost_grid_marker = cost_grid.toVizMsg(self.cost_grid_params)
-        self.marker_array_pub.publish(cost_grid_marker)
-
+        self.cost_grid_viz_pub.publish(cost_grid_marker)
+        print('published2')
+        
     def shutdown(self):
         """
         Clean up class before process end.

@@ -68,12 +68,13 @@ class Obstacle:
         y = sp.Symbol('y')
         t = sp.Symbol('t')
 
-        max_cost = 2000 # cost at radius = max_cost/2
+        max_cost = 100 # cost at radius = max_cost/2
         function_degree = 20
 
-        self.obstacles_fun = sp.Function('obstacles_fun')
-        self.obstacles_fun = 2*max_cost * 2**(-((((x + t*self.x_dot - self.x)**2 + (y + t*self.y_dot - self.y)**2)/self.radius**2)**(function_degree*self.radius/2)))
-        # self.obstacles_fun = x**2+y+t/self.x
+        obstacle_cost_fun = sp.Function('obstacles_fun')
+        obstacle_cost_fun = 2*max_cost * 2**(-((((x + t*self.x_dot - self.x)**2 + (y + t*self.y_dot - self.y)**2)/self.radius**2)**(function_degree*self.radius/2)))
+
+        self.getCost = sp.lambdify([x, y, t], obstacle_cost_fun)
 
         # DEBUG VISUALIZATIONS
         # print "init obstacle fun"
@@ -142,25 +143,3 @@ class Obstacle:
             the y velocity
         """
         return self.x, self.y, self.x_dot, self.y_dot
-
-    def getCost(self, x_num, y_num, t_num):
-        """
-        return the value of the cost created by this obstacle at a specific time point
-
-        Parameters
-        ----------
-        x_num : float
-            x position of the requested cost value
-        y_num : float
-            y position of the requested cost value
-        t_num : float
-            time of requested cost value
-
-        Returns
-        -------
-        float : the requested cost
-        """
-        x = sp.Symbol('x')
-        y = sp.Symbol('y')
-        t = sp.Symbol('t')
-        return self.obstacles_fun.subs([(x,x_num),(y,y_num),(t,t_num)])

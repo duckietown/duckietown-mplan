@@ -330,13 +330,11 @@ class CostGridPopulator:
 
                     # set cost of node and world position of node, world position of node is actor position + node position in cost grid frame
                     self.cost_grid.setCost(i, j, k, cost)
-                    self.cost_grid.setXWorld(i, j, k, x_origin + math.sin(theta_origin)*x-math.cos(theta_origin)*y)
-                    self.cost_grid.setYWorld(i, j, k, y_origin + math.cos(theta_origin)*x+math.sin(theta_origin)*y)
-
+                    self.cost_grid.setXWorld(i, j, k, x_origin + math.cos(theta_origin)*x-math.sin(theta_origin)*y)
+                    self.cost_grid.setYWorld(i, j, k, y_origin + math.sin(theta_origin)*x+math.cos(theta_origin)*y)
 
         # add weighted edges to graph
         self.connectGraph(self.cost_grid.costs, actor_position.x, actor_position.y, cost_grid_params, max_actor_vel)
-
         self.cost_grid.populated = True
         return self.cost_grid
 
@@ -368,8 +366,8 @@ class CostGridPopulator:
         cost = total_fun.subs([(x, x_rw),(y,y_rw),(t,t_rw)])
 
         # add the cost of every duckiebot obstacle
-        # for elem in obstacle_list:
-        #     cost += elem.getCost(x_rw,y_rw,t_rw)
+        for elem in obstacle_list:
+            cost += elem.getCost(x_rw,y_rw,t_rw)
 
         return cost
 

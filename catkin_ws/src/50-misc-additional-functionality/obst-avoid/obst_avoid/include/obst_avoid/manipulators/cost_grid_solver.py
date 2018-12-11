@@ -59,8 +59,8 @@ class CostGridSolver:
         trajectory.duration = cost_grid_params.get('n_t')*cost_grid_params.get('dt')
         trajectory.ts = cost_grid_params.get('dt')
         trajectory.positions = path_tf
-        print(path)
-        print(path_tf)
+        # print(path)
+        # print(path_tf)
         trajectory.times = np.linspace(0, 1, len(path_tf))
 
         return trajectory

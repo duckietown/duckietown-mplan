@@ -8,7 +8,7 @@ def main():
     rospy.init_node('trajectory_creator_node', anonymous=False)
 
     # instantiate standalone trajectory creator at max frequency
-    trajectory_creator = TrajectoryCreator(standalone=True, frequency=1)
+    trajectory_creator = TrajectoryCreator(standalone=True, frequency=0.3333)
 
 
 if __name__ == '__main__':

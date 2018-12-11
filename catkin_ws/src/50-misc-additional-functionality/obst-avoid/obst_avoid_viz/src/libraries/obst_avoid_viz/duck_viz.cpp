@@ -27,8 +27,12 @@ void DuckViz::duckieBotSubCb(const flock_simulator::FlockState &msg) {
     marker.header.stamp = ros::Time::now();
     marker.ns = "obst_avoid_viz";
     marker.id = i;
-    marker.type = visualization_msgs::Marker::CYLINDER;
+    marker.type = visualization_msgs::Marker::MESH_RESOURCE;
     marker.action = visualization_msgs::Marker::ADD;
+    marker.mesh_resource =
+        "package://duckietown_visualization/meshes/duckiebot/"
+        "duckiebot.dae";
+    marker.mesh_use_embedded_materials = true;
     marker.pose.position.x = msg.duckie_states[i].pose.x;
     marker.pose.position.y = msg.duckie_states[i].pose.y;
     marker.pose.position.z = 0.05;
@@ -42,9 +46,9 @@ void DuckViz::duckieBotSubCb(const flock_simulator::FlockState &msg) {
     marker.pose.orientation.y = q.getY();
     marker.pose.orientation.z = q.getZ();
     marker.pose.orientation.w = q.getW();
-    marker.scale.x = 0.2;
-    marker.scale.y = 0.1;
-    marker.scale.z = 0.1;
+    marker.scale.x = 1;
+    marker.scale.y = 1;
+    marker.scale.z = 1;
     marker.lifetime = ros::Duration();
 
     // if the main duckiebot set its color to yellow, else duckiebot is red

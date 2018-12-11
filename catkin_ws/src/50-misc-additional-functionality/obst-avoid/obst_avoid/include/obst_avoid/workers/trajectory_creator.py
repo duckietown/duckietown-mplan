@@ -155,6 +155,25 @@ class TrajectoryCreator(WorkerBase):
         dist_2 = np.einsum('ij,ij->i', deltas, deltas)
         return np.argmin(dist_2)
 
+    def findCloserTile(tile_origin1, tile_origin2):
+        return closer_tile_origin
+
+    def getNextTile(tile_origin, tile_type, tile_entry_angle):
+
+        # if(tile_type=='straight.dae'):
+        #     return tile_origin+tile_entry_vec*tile_size
+        # if(tile_type=='curve_left.dae'):
+        #     delta_theta = tile_origin[2]-tile_entry_angle
+        #     if(delta_theta=math.pi*3/2):
+        #
+        #
+        # if(tile_type=='curve_right.dae'):
+        # if(tile_type=='straight'):
+        # if(tile_type=='straight'):
+
+        return next_tile_origin
+
+
     def advance(self, Ts=1.0):
         """
         Grabs the trajectory object, stored in self.trajectory and samples it.

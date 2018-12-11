@@ -5,7 +5,10 @@
   <arg name="rviz_config"
       default="$(find obst_avoid_viz)/config/default.rviz"/>
   <arg name="map_name" default="robotarium1"/>
-  <arg name="n_duckies" default="5"/>
+  <arg name="n_duckies" default="6"/>
+  <arg name="x_pos_set" default="1.0"/>
+  <arg name="y_pos_set" default="1.0"/>
+  <arg name="theta_set" default="0.0"/>
 
   <!-- OBSTACLE AVOIDANCE NODES -->
   <node name="trajectory_creator_node" pkg="obst_avoid" type="trajectory_creator_node.py" output="screen"/>
@@ -17,6 +20,9 @@
   <node pkg="flock_simulator" name="flock_simulator_node" type="flock_simulator_node.py" output="screen">
       <param name="map_name" value="$(arg map_name)"/>
       <param name="n_duckies" value="$(arg n_duckies)"/>
+      <param name="x_pos_set" value="$(arg x_pos_set)"/>
+      <param name="y_pos_set" value="$(arg y_pos_set)"/>
+      <param name="theta_set" value="$(arg theta_set)"/>
   </node>
   <node name="fleet_planner_wrapper_node" pkg="obst_avoid" type="fleet_planner_wrapper_node.py" output="screen"/>
 

@@ -294,31 +294,33 @@ class CostGrid:
         n_y = cost_grid_params.get('n_y')
         id = 1
         marker_array_msg = MarkerArray()
-        # add weighted nodes to cost_grid object
-        for k in range(n_t):
-            for i in range(n_x):
-                for j in range(n_y):
-                    cost = self.costs.nodes[(i, j, k)]['node_weight']
+        # iterate over all grids
+        # TODO make time dependent and add to sampler to update most relevant layer - currently only the first time layer is implemented...
+        # for k in range(n_t):
+        k = 0
+        for i in range(n_x):
+            for j in range(n_y):
+                cost = self.costs.nodes[(i, j, k)]['node_weight']
 
-                    # visualizations of each cost grid element
-                    marker = Marker()
-                    marker.id = id
-                    id += 1
-                    marker.ns = 'cost_grid'
-                    marker.type = Marker.SPHERE
-                    marker.header.frame_id = "/map"
-                    marker.action = Marker.ADD
-                    marker.scale.x = 0.05
-                    marker.scale.y = 0.05
-                    marker.scale.z = 0.05
-                    marker.color.a = 0.5
-                    marker.color.r = cost
-                    marker.color.g = 0.1
-                    marker.color.b = 0.1
-                    marker.pose.position.x = self.getXWorld(i,j,k)
-                    marker.pose.position.y = self.getYWorld(i,j,k)
-                    marker.pose.position.z = self.getTPos(i,j,k)/10
+                # visualizations of each cost grid element
+                marker = Marker()
+                marker.id = id
+                id += 1
+                marker.ns = 'cost_grid'
+                marker.type = Marker.CYLINDER
+                marker.header.frame_id = "/map"
+                marker.action = Marker.ADD
+                marker.scale.x = 0.05
+                marker.scale.y = 0.05
+                marker.scale.z = cost
+                marker.color.a = 0.5
+                marker.color.r = cost
+                marker.color.g = 0.1
+                marker.color.b = 0.1
+                marker.pose.position.x = self.getXWorld(i,j,k)
+                marker.pose.position.y = self.getYWorld(i,j,k)
+                marker.pose.position.z = self.getTPos(i,j,k) + cost / 2
 
-                    marker_array_msg.markers.append(marker)
+                marker_array_msg.markers.append(marker)
 
         return marker_array_msg

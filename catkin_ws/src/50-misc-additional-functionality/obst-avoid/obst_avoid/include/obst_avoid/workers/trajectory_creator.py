@@ -150,17 +150,6 @@ class TrajectoryCreator(WorkerBase):
         dist_2 = np.einsum('ij,ij->i', deltas, deltas)
         return self.tiles[np.argmin(dist_2)]
 
-    def findCloserTile(self, x, y, tile1, tile2):
-        pos1 = tile1['position']
-        pos2 = tile2['position']
-        dist1 = (pos1[0] - x)**2 + (pos1[1] - y)**2
-        dist2 = (pos2[0] - x)**2 + (pos2[1] - y)**2
-
-        if dist1 < dist2:
-            return tile1, dist1
-        else:
-            return tile2, dist2
-
     def distToTile(self, x, y, tile):
         return ((x-tile['position'][0])**2 + (y-tile['position'][1])**2)**0.5
 
@@ -264,7 +253,6 @@ class TrajectoryCreator(WorkerBase):
         -------
         none
         """
-        self.publishTiles(self.tile_current, self.tile_next)
 
         if self.distToTile(self.actor.x, self.actor.y, self.tile_current) > self.distToTile(self.actor.x, self.actor.y, self.tile_next):
             print('update called on tile shift')
@@ -274,6 +262,7 @@ class TrajectoryCreator(WorkerBase):
         d = self.distVecToTile(self.actor.x, self.actor.y, self.tile_current)
         e = self.getUnitVecFromTheta(self.tile_current['entry_angle'])[:2]
         offset = np.dot(d, e)*e
+
         cost_grid_origin = [self.tile_current['position'][0]+offset[0], self.tile_current['position'][1]+offset[1], self.tile_next['entry_angle']]
 
         # get the filled cost grid
@@ -291,6 +280,8 @@ class TrajectoryCreator(WorkerBase):
         # publish cost_grid msg
         cost_grid_marker = cost_grid.toVizMsg(self.cost_grid_params)
         self.cost_grid_viz_pub.publish(cost_grid_marker)
+
+        self.publishTiles(self.tile_current, self.tile_next)
 
     def shutdown(self):
         """

@@ -54,6 +54,7 @@ class Obstacle:
         self.radius = r
         self.x_dot = x_dot
         self.y_dot = y_dot
+        self.theta = 0
 
         self.init_obstacles_fun()
 
@@ -66,6 +67,10 @@ class Obstacle:
     def init_obstacles_fun(self):
         x = sp.Symbol('x')
         y = sp.Symbol('y')
+        obs_x = sp.Symbol('obs_x')
+        obs_y = sp.Symbol('obs_y')
+        obs_x_dot = sp.Symbol('obs_x_dot')
+        obs_y_dot = sp.Symbol('obs_y_dot')
         t = sp.Symbol('t')
 
         max_cost = 100 # cost at radius = max_cost/2
@@ -74,7 +79,10 @@ class Obstacle:
         obstacle_cost_fun = sp.Function('obstacles_fun')
         obstacle_cost_fun = 2*max_cost * 2**(-((((x + t*self.x_dot - self.x)**2 + (y + t*self.y_dot - self.y)**2)/self.radius**2)**(function_degree*self.radius/2)))
 
-        self.getCost = sp.lambdify([x, y, t], obstacle_cost_fun)
+        obstacle_cost_fun = 2*max_cost * 2**(-((((x + t*obs_x_dot - obs_x)**2 + (y + t*obs_y_dot - obs_y)**2)/self.radius**2)**(function_degree*self.radius/2)))
+
+
+        self.getCost = sp.lambdify([x, y, t, obs_x, obs_y, obs_x_dot, obs_y_dot ], obstacle_cost_fun)
 
         # DEBUG VISUALIZATIONS
         # print "init obstacle fun"
@@ -118,10 +126,10 @@ class Obstacle:
         """
         self.x = msg.pose.x
         self.y = msg.pose.y
+        self.theta = msg.pose.theta
         self.x_dot = msg.twist.x
         self.y_dot = msg.twist.y
         self.radius = msg.safety_radius
-        self.init_obstacles_fun()
 
     def getState(self):
         """

@@ -1,6 +1,7 @@
 from obst_avoid.containers import Obstacle
 from obst_avoid.containers import CostGrid
 import math
+import numpy as np
 import sympy as sp
 
 from std_msgs.msg import ColorRGBA
@@ -28,8 +29,7 @@ class CostGridPopulator:
         self.push_fwd_frac = 0.1
         self.street_bound_frac = 0.3
         self.obst_avoid_frac = 0.6
-        self.init_push_fwd_fun(cost_grid_params, max_actor_vel)
-        self.init_street_bound_fun(cost_grid_params, max_actor_vel)
+        self.init_fixed_fun(cost_grid_params, max_actor_vel)
 
         # create cost_grid object
         self.cost_grid = CostGrid()
@@ -203,6 +203,21 @@ class CostGridPopulator:
 
                 pass
 
+    def init_fixed_fun(self, cost_grid_params, max_actor_vel):
+
+        self.init_push_fwd_fun(cost_grid_params, max_actor_vel)
+        self.init_street_bound_fun(cost_grid_params, max_actor_vel)
+
+        x = sp.Symbol('x')
+        y = sp.Symbol('y')
+        t = sp.Symbol('t')
+
+        # TODO lambdify
+        total_fun = sp.Function('total_fun')
+        total_fun = self.push_fwd_frac * self.push_fwd_fun + self.street_bound_frac * self.street_bound_fun
+
+        self.fixed_cost = sp.lambdify([x,y,t], total_fun)
+
     def fillGraph(self, cost_grid_params):
         """
         Fill the networkx graph of the cost grid with nodes
@@ -326,7 +341,7 @@ class CostGridPopulator:
                     t = self.cost_grid.getTPos(i,j,k)
 
                     # calculate cost for node
-                    cost = self.calculateCost(x, y, t, list_of_obstacles)
+                    cost = self.calculateCost(x, y, t, list_of_obstacles, actor_position)
 
                     # set cost of node and world position of node, world position of node is actor position + node position in cost grid frame
                     self.cost_grid.setCost(i, j, k, cost)
@@ -338,18 +353,18 @@ class CostGridPopulator:
         self.cost_grid.populated = True
         return self.cost_grid
 
-    def calculateCost(self, x_rw, y_rw, t_rw, obstacle_list):
+    def calculateCost(self, x_df, y_df, t_df, obstacle_list, actor):
         """
         return the value of the costfunction at a specific time point
 
         Parameters
         ----------
         x_rw : float
-            x position of the requested cost value
+            x position of the requested cost value in the duckie frame
         y_rw : float
-            y position of the requested cost value
+            y position of the requested cost value in the duckie frame
         t_rw : float
-            time of requested cost value
+            time of requested cost value in the duckie frame
         obstacle_list (TODO): containers.Obstacle[]
             list of obstacles state objects
 
@@ -357,30 +372,31 @@ class CostGridPopulator:
         -------
         float : the requested cost
         """
-        x = sp.Symbol('x')
-        y = sp.Symbol('y')
-        t = sp.Symbol('t')
 
-        # TODO lambdify
 
-        total_fun = self.push_fwd_frac * self.push_fwd_fun + self.street_bound_frac * self.street_bound_fun
+        # get cost of straight line & forward cost
+        cost = self.fixed_cost(x_df, y_df, t_df)
 
-        cost = total_fun.subs([(x, x_rw),(y,y_rw),(t,t_rw)])
+        # list = [[1,1]]
 
-        list = [[1,1]]
+        # convert duckie frame into real_world frame
+        x_rwf = np.cos(actor.theta) * x_df - np.sin(actor.theta) * y_df + actor.x
+        y_rwf = np.sin(actor.theta) * x_df + np.cos(actor.theta) * y_df + actor.y
+        t_rwf = t_df
+
 
         # add the cost of every duckiebot obstacle
         for elem in obstacle_list:
-            cost += elem.getCost(x_rw,y_rw,t_rw)
+            cost += self.obst_avoid_frac * elem.getCost(x_rwf,y_rwf,t_rwf, elem.x, elem.y, elem.x_dot, elem.y_dot)
 
-            if x_rw == 0 and y_rw == 0 and t_rw == 0:
+            # if x_rw == 0 and y_rw == 0 and t_rw == 0:
                 # print(elem.x, 'elem.x')
                 # print(elem.y, 'elem.y')
-                print('blub')
+                # print('blub')
 
-                list.append([elem.x, elem.y])
+                # list.append([elem.x, elem.y])
 
-        print(list, 'yeah')
+        # print(list, 'yeah')
 
         return cost
 

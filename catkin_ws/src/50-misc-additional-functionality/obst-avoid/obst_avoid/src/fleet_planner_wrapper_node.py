@@ -61,9 +61,12 @@ def fleetPlannerCb(msg):
     # create and fill Obstacles msg and publish it
     obstacle_list_msg = dtmsg.Obstacles()
     obstacle_list_msg.header = msg.header
-    obstacle_list_msg.moving_objects = obstacle_list
+    obstacle_list_msg.moving_objects = obstacle_list    # print(obstacle_list_msg)
+    # print(actor_msg)
     obstacle_pub.publish(obstacle_list_msg)
     actor_pub.publish(actor_msg)
+    # print(obstacle_list_msg)
+    # print(actor_msg)
 
 def commandCb(msg):
 

@@ -361,13 +361,26 @@ class CostGridPopulator:
         y = sp.Symbol('y')
         t = sp.Symbol('t')
 
-        total_fun = self.push_fwd_frac * self.push_fwd_fun + self.street_bound_frac *self.street_bound_fun
+        # TODO lambdify
+
+        total_fun = self.push_fwd_frac * self.push_fwd_fun + self.street_bound_frac * self.street_bound_fun
 
         cost = total_fun.subs([(x, x_rw),(y,y_rw),(t,t_rw)])
+
+        list = [[1,1]]
 
         # add the cost of every duckiebot obstacle
         for elem in obstacle_list:
             cost += elem.getCost(x_rw,y_rw,t_rw)
+
+            if x_rw == 0 and y_rw == 0 and t_rw == 0:
+                # print(elem.x, 'elem.x')
+                # print(elem.y, 'elem.y')
+                print('blub')
+
+                list.append([elem.x, elem.y])
+
+        print(list, 'yeah')
 
         return cost
 

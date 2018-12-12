@@ -1,6 +1,7 @@
 [submodule "catkin_ws/src/50-misc-additional-functionality/duckietown-fplan"]
 	path = catkin_ws/src/50-misc-additional-functionality/duckietown-fplan
 	url = git@github.com:alessandromorra/duckietown-fplan.git
+	branch = master
 [submodule "catkin_ws/src/50-misc-additional-functionality/duckietown-visualization"]
 	path = catkin_ws/src/50-misc-additional-functionality/duckietown-visualization
 	url = https://github.com/duckietown/duckietown-visualization.git

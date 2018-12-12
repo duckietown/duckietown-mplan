@@ -81,6 +81,9 @@ class TrajectoryCreator(WorkerBase):
         self.cost_grid_populator = CostGridPopulator(self.cost_grid_params, self.max_actor_vel)
         self.cost_grid_solver = CostGridSolver()
         self.actor = Obstacle()
+        self.tile_size = 0.585
+        self.actor.x = rospy.get_param('x_pos_set')*self.tile_size
+        self.actor.y = rospy.get_param('y_pos_set')*self.tile_size
         self.obstacle_list = []
 
     def initIO(self):
@@ -114,7 +117,7 @@ class TrajectoryCreator(WorkerBase):
 
         map = rospy.wait_for_message("duckietown_map", MarkerArray)
         self.parseMapToTileList(map)
-        self.tile_current = self.findClosestTile(1, 0)
+        self.tile_current = self.findClosestTile(rospy.get_param('x_pos_set')*self.tile_size, rospy.get_param('y_pos_set')*self.tile_size)
         self.tile_next = self.getNextTile(self.tile_current)
 
     def actorCb(self, data):
@@ -160,7 +163,6 @@ class TrajectoryCreator(WorkerBase):
         return np.asarray([math.cos(theta), math.sin(theta), 0])*length
 
     def getNextTile(self, tile):
-        tile_size = 0.575 #TODO add to param server
         delta_theta = tile['entry_angle']-tile['position'][2]
         if delta_theta < 0:
             delta_theta += 2*math.pi
@@ -197,7 +199,7 @@ class TrajectoryCreator(WorkerBase):
         else:
             print('kakcki')
 
-        xy = tile['position']+self.getUnitVecFromTheta(next_entry_angle, tile_size)
+        xy = tile['position']+self.getUnitVecFromTheta(next_entry_angle, self.tile_size)
         next_tile = self.findClosestTile(xy[0], xy[1])
         next_tile['entry_angle'] = next_entry_angle
         return next_tile

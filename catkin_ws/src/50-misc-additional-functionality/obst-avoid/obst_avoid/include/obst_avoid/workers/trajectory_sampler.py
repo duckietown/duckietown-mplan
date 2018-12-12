@@ -64,7 +64,7 @@ class TrajectorySampler(WorkerBase):
 
         self.vel_max = 2
         self.omega_max = 3
-        self.target_time = 1
+        self.target_time = 2
         self.k_vel = 1
         self.k_P = 2
         self.k_I = 0

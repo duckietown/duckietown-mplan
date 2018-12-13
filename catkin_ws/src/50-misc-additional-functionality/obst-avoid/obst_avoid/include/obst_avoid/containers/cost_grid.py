@@ -294,6 +294,7 @@ class CostGrid:
         n_y = cost_grid_params.get('n_y')
         id = 1
         marker_array_msg = MarkerArray()
+        
         # iterate over all grids
         # TODO make time dependent and add to sampler to update most relevant layer - currently only the first time layer is implemented...
         # for k in range(n_t):

@@ -26,9 +26,9 @@ class CostGridPopulator:
         empty
         """
         # initialize cost helper functions
-        self.push_fwd_frac = 0.1
-        self.street_bound_frac = 0.3
-        self.obst_avoid_frac = 0.6
+        self.push_fwd_frac = 0.2
+        self.street_bound_frac = 0.4
+        self.obst_avoid_frac = 0.4
         self.init_fixed_fun(cost_grid_params, max_actor_vel)
 
         # create cost_grid object
@@ -205,17 +205,34 @@ class CostGridPopulator:
 
     def init_fixed_fun(self, cost_grid_params, max_actor_vel):
 
+        """
+        Creates a function for the fixed cost determined by the environment
+
+        Parameters
+        ----------
+        cost_grid_params: dictionary
+        a dictionary containing the cost grid dimensions
+        max_actor_vel: float
+        target velocity of duckiebot
+        Returns
+        -------
+        n.a.
+        """
+
+        # Initialise Constant Functions
         self.init_push_fwd_fun(cost_grid_params, max_actor_vel)
         self.init_street_bound_fun(cost_grid_params, max_actor_vel)
 
+        # create symbolic objects
         x = sp.Symbol('x')
         y = sp.Symbol('y')
         t = sp.Symbol('t')
-
-        # TODO lambdify
         total_fun = sp.Function('total_fun')
+
+        # combine the constant functions
         total_fun = self.push_fwd_frac * self.push_fwd_fun + self.street_bound_frac * self.street_bound_fun
 
+        # create a function for fast execution
         self.fixed_cost = sp.lambdify([x,y,t], total_fun)
 
     def fillGraph(self, cost_grid_params):
@@ -373,30 +390,18 @@ class CostGridPopulator:
         float : the requested cost
         """
 
-
         # get cost of straight line & forward cost
         cost = self.fixed_cost(x_df, y_df, t_df)
 
-        # list = [[1,1]]
-
+        # TODO: generalize the transfrom Function --> is there already a funciton that can do this transformation?  
         # convert duckie frame into real_world frame
         x_rwf = np.cos(actor.theta) * x_df - np.sin(actor.theta) * y_df + actor.x
         y_rwf = np.sin(actor.theta) * x_df + np.cos(actor.theta) * y_df + actor.y
         t_rwf = t_df
 
-
         # add the cost of every duckiebot obstacle
         for elem in obstacle_list:
             cost += self.obst_avoid_frac * elem.getCost(x_rwf,y_rwf,t_rwf, elem.x, elem.y, elem.x_dot, elem.y_dot)
-
-            # if x_rw == 0 and y_rw == 0 and t_rw == 0:
-                # print(elem.x, 'elem.x')
-                # print(elem.y, 'elem.y')
-                # print('blub')
-
-                # list.append([elem.x, elem.y])
-
-        # print(list, 'yeah')
 
         return cost
 

@@ -77,8 +77,6 @@ class Obstacle:
         function_degree = 20
 
         obstacle_cost_fun = sp.Function('obstacles_fun')
-        obstacle_cost_fun = 2*max_cost * 2**(-((((x + t*self.x_dot - self.x)**2 + (y + t*self.y_dot - self.y)**2)/self.radius**2)**(function_degree*self.radius/2)))
-
         obstacle_cost_fun = 2*max_cost * 2**(-((((x + t*obs_x_dot - obs_x)**2 + (y + t*obs_y_dot - obs_y)**2)/self.radius**2)**(function_degree*self.radius/2)))
 
 

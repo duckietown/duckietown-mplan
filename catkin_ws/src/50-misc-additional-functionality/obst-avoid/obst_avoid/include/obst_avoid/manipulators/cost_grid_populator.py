@@ -257,7 +257,7 @@ class CostGridPopulator:
                     t_pos=k*cost_grid_params.get('dt')
                     self.cost_grid.costs.add_node((i, j, k), x_pos=x_pos, x_world=x_pos, y_pos=y_pos, y_world=y_pos, t_pos=t_pos, node_weight=0.0)
 
-    def connectGraph(self, graph, actor_x, actor_y, cost_grid_params, max_actor_vel):
+    def connectGraph(self, graph, actor_x, actor_y, cost_grid_params, max_actor_vel, dist_to_centerline):
         """
         connect the graph of an obstacle grid
 
@@ -274,10 +274,24 @@ class CostGridPopulator:
         -------
         networkx.Graph : the connected graph
         """
+
+        def saturator(arg, s_min, s_max):
+            if arg < s_min:
+                res = s_min
+            elif arg > s_max:
+                res = s_max
+            else:
+                res = arg
+            return res
+
+        # saturate distance to centerline
+        sat_dist_to_centerline = saturator(dist_to_centerline, -cost_grid_params.get('dy'), cost_grid_params.get('dy'))
+
         # connect start node (find closest node index to current actor position) to first layer (layer 0)
+        print(dist_to_centerline)
         k_0 = 0
         i_0 = 0
-        j_0 = int(round(actor_y/cost_grid_params.get('dy')+(cost_grid_params.get('n_y')-1)/2.0))
+        j_0 = int(round(sat_dist_to_centerline/cost_grid_params.get('dy')+(cost_grid_params.get('n_y')-1)/2.0))
         self.cost_grid.costs.add_weighted_edges_from([('S', (i_0,j_0,k_0), 0.0)])
 
         # connect layers from layer 0 to layer n_t-1
@@ -366,7 +380,7 @@ class CostGridPopulator:
                     self.cost_grid.setYWorld(i, j, k, y_origin + math.sin(theta_origin)*x+math.cos(theta_origin)*y)
 
         # add weighted edges to graph
-        self.connectGraph(self.cost_grid.costs, actor_position.x, actor_position.y, cost_grid_params, max_actor_vel)
+        self.connectGraph(self.cost_grid.costs, actor_position.x, actor_position.y, cost_grid_params, max_actor_vel, dist_to_centerline)
         self.cost_grid.populated = True
         return self.cost_grid
 

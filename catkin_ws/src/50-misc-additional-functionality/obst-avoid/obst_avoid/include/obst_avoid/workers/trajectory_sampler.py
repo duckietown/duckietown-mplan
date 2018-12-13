@@ -94,6 +94,9 @@ class TrajectorySampler(WorkerBase):
         self.command_pub = rospy.Publisher(
             'obst_avoid/twist', dtmsg.Twist2DStamped, queue_size=10)
 
+        # wait until first trajectory is published from trajectory creator
+        rospy.wait_for_message("obst_avoid/trajectory", dtmsg.TimedPath)
+
     def trajectoryCb(self, data):
         self.trajectory.fromMsg(data)
 

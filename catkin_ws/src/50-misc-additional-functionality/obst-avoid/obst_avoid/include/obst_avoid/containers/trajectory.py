@@ -111,7 +111,10 @@ class Trajectory:
             correspoding to the given time.
         """
         # assert we are not looking out of trajectory range
-        assert time_duration < self.duration
+        # assert time_duration < self.duration
+        if time_duration > self.duration:
+            rospy.logwarn('[Trajectory.getPositionFromDuration] tried to acces point out of bounds, returning last point on path')
+            return self.f_x(1), self.f_y(1)
 
         # scale time to unit duration
         normalized_time = time_duration/self.duration

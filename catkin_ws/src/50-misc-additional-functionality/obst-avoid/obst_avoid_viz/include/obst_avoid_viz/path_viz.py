@@ -80,9 +80,11 @@ class PathViz(WorkerBase):
         self.path_pub = rospy.Publisher('obst_avoid_viz/path', Path,
             queue_size=10)
 
-
         self.marker_pub = rospy.Publisher(
             'obst_avoid_viz/trajectory/sampled_point', Marker, queue_size=10)
+
+        rospy.wait_for_message("obst_avoid/trajectory", dtmsg.TimedPath)
+
 
 
     def trajectoryCb(self, data):

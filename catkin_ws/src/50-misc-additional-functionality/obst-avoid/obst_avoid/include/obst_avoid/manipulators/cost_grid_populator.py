@@ -314,7 +314,7 @@ class CostGridPopulator:
                             next_nodes.append((mask_x, mask_y, k_n + 1))
             active_nodes = next_nodes
 
-    def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel, origin):
+    def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel, origin, dist_to_centerline):
         """
         Create a cost grid and populate it according to the obstacles
 
@@ -393,7 +393,7 @@ class CostGridPopulator:
         # get cost of straight line & forward cost
         cost = self.fixed_cost(x_df, y_df, t_df)
 
-        # TODO: generalize the transfrom Function --> is there already a funciton that can do this transformation?  
+        # TODO: generalize the transfrom Function --> is there already a funciton that can do this transformation?
         # convert duckie frame into real_world frame
         x_rwf = np.cos(actor.theta) * x_df - np.sin(actor.theta) * y_df + actor.x
         y_rwf = np.sin(actor.theta) * x_df + np.cos(actor.theta) * y_df + actor.y

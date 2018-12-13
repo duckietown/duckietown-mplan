@@ -135,6 +135,13 @@ class TrajectoryCreator(WorkerBase):
         self.map_sub.unregister()
         self.parseMapToTileList(data)
 
+    def mapToPositiveAngle(self, angle):
+        if angle > 2*math.pi:
+            angle -= 2*math.pi
+        elif angle < -2*math.pi:
+            angle += 2*math.pi
+        return angle
+
     def parseMapToTileList(self, map):
         # find the closest tile and return its position and orientation
         self.tiles = []
@@ -144,7 +151,8 @@ class TrajectoryCreator(WorkerBase):
                 if name != 'asphalt.dae':
                     quaternion = [elem.pose.orientation.x, elem.pose.orientation.y, elem.pose.orientation.z, elem.pose.orientation.w]
                     yaw = tf.transformations.euler_from_quaternion(quaternion)[2]
-                    self.tiles.append({'position' : [elem.pose.position.x, elem.pose.position.y, yaw+math.pi/2], 'type' : name, 'entry_angle' : yaw})
+                    yaw = self.mapToPositiveAngle(yaw)
+                    self.tiles.append({'position' : [elem.pose.position.x, elem.pose.position.y, yaw], 'type' : name, 'entry_angle' : yaw})
 
     def findClosestTile(self, x, y):
         tile_positions = [elem['position'] for elem in self.tiles]
@@ -156,7 +164,7 @@ class TrajectoryCreator(WorkerBase):
     def distToTile(self, x, y, tile):
         return ((x-tile['position'][0])**2 + (y-tile['position'][1])**2)**0.5
 
-    def distVecToTile(self, x, y, tile):
+    def distVecFromTile(self, x, y, tile):
         return np.asarray([x-tile['position'][0], y-tile['position'][1]])
 
     def getUnitVecFromTheta(self, theta, length=1):
@@ -164,10 +172,7 @@ class TrajectoryCreator(WorkerBase):
 
     def getNextTile(self, tile):
         delta_theta = tile['entry_angle']-tile['position'][2]
-        if delta_theta < 0:
-            delta_theta += 2*math.pi
-        if delta_theta > 2*math.pi:
-            delta_theta -= 2*math.pi
+        delta_theta = self.mapToPositiveAngle(delta_theta)
 
         xy = [0,0,0]
         next_entry_angle = 0
@@ -176,15 +181,15 @@ class TrajectoryCreator(WorkerBase):
             next_entry_angle = tile['entry_angle']
 
         elif tile['type']=='curve_left.dae':
-            if delta_theta == math.pi*3/2:
+            if delta_theta == math.pi*2/2:
                 next_entry_angle = tile['entry_angle']+math.pi/2
-            if delta_theta == math.pi:
+            if delta_theta == math.pi/2:
                 next_entry_angle = tile['entry_angle']-math.pi/2
 
         elif tile['type']=='curve_right.dae':
-            if delta_theta == math.pi*3/2:
+            if delta_theta == math.pi*2/2:
                 next_entry_angle = tile['entry_angle']-math.pi/2
-            if delta_theta == 0:
+            if delta_theta == math.pi*3/2:
                 next_entry_angle = tile['entry_angle']+math.pi/2
 
         elif tile['type']=='4way.dae':
@@ -241,6 +246,65 @@ class TrajectoryCreator(WorkerBase):
         marker_msg.markers.append(self.getMarker(2, tile2))
         self.tile_pub.publish(marker_msg)
 
+    def getCostGridOrigin(self, tile_current, tile_next, actor):
+        type = tile_current['type']
+
+        if type == 'straight.dae':
+            d = self.distVecFromTile(self.actor.x, self.actor.y, self.tile_current)
+            e = self.getUnitVecFromTheta(self.tile_current['entry_angle'])[:2]
+            offset = np.dot(d, e)*e
+            cost_grid_origin = [self.tile_current['position'][0]+offset[0], self.tile_current['position'][1]+offset[1], self.tile_next['entry_angle']]
+
+        elif type == 'curve_left.dae':
+            # tile position in world frame
+            w_P_t = tile_current['position']
+
+            # duckiebot positon in world frame
+            w_P_d = np.array([actor.x, actor.y])
+
+            # corner position in tile frame TODO check
+            t_P_c = np.rot90(np.array([-self.tile_size/2, self.tile_size/2]), k=round(w_P_t[2]/math.pi*2))
+
+            # corner position in world frame
+            w_P_c = w_P_t + t_P_c
+
+            # unit radius vector
+            radius = w_P_d - w_P_c
+            unit_radius = radius / np.linalg.norm(radius)
+
+            # get positional cost_grid_origin
+            cost_grid_origin = w_P_c + self.tile_size/2 * unit_radius
+
+
+
+        elif type == 'curve_right.dae':
+            # tile position in world frame
+            w_P_t = tile_current['position']
+
+            # duckiebot positon in world frame
+            w_P_d = np.array([actor.x, actor.y])
+
+            # corner position in tile frame TODO check
+            t_P_c = np.rot90(np.array([-self.tile_size/2, -self.tile_size/2]), k=round(w_P_t[2]/math.pi*2))
+
+            # corner position in world frame
+            w_P_c = w_P_t + t_P_c
+
+            # unit radius vector
+            radius = w_P_d - w_P_c
+            unit_radius = radius / np.linalg.norm(radius)
+
+            # get positional cost_grid_origin
+            cost_grid_origin = w_P_c + self.tile_size/2 * unit_radius
+
+        else:
+            d = self.distVecFromTile(self.actor.x, self.actor.y, self.tile_current)
+            e = self.getUnitVecFromTheta(self.tile_current['entry_angle'])[:2]
+            offset = np.dot(d, e)*e
+            cost_grid_origin = [self.tile_current['position'][0]+offset[0], self.tile_current['position'][1]+offset[1], self.tile_next['entry_angle']]
+
+        return cost_grid_origin
+
     def advance(self, Ts=1.0):
         """
         Grabs the trajectory object, stored in self.trajectory and samples it.
@@ -261,14 +325,16 @@ class TrajectoryCreator(WorkerBase):
             self.tile_current = self.tile_next
             self.tile_next = self.getNextTile(self.tile_current)
 
-        d = self.distVecToTile(self.actor.x, self.actor.y, self.tile_current)
-        e = self.getUnitVecFromTheta(self.tile_current['entry_angle'])[:2]
-        offset = np.dot(d, e)*e
+        cost_grid_origin = self.getCostGridOrigin(self.tile_current, self.tile_next, self.actor)
 
-        cost_grid_origin = [self.tile_current['position'][0]+offset[0], self.tile_current['position'][1]+offset[1], self.tile_next['entry_angle']]
+        entry_angle = self.tile_current['entry_angle']
+        d = self.distVecFromTile(self.actor.x, self.actor.y, self.tile_current)
+        e = self.getUnitVecFromTheta(self.tile_current['entry_angle']+math.pi/2)[:2]
+        dist_to_centerline = np.dot(d, e)
+
 
         # get the filled cost grid
-        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel, cost_grid_origin)
+        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel, cost_grid_origin, dist_to_centerline)
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.cost_grid_params)

@@ -288,7 +288,6 @@ class CostGridPopulator:
         sat_dist_to_centerline = saturator(dist_to_centerline, -cost_grid_params.get('dy'), cost_grid_params.get('dy'))
 
         # connect start node (find closest node index to current actor position) to first layer (layer 0)
-        print(dist_to_centerline)
         k_0 = 0
         i_0 = 0
         j_0 = int(round(sat_dist_to_centerline/cost_grid_params.get('dy')+(cost_grid_params.get('n_y')-1)/2.0))

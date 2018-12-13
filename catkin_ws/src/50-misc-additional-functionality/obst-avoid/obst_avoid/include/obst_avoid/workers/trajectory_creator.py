@@ -246,24 +246,40 @@ class TrajectoryCreator(WorkerBase):
         marker_msg.markers.append(self.getMarker(2, tile2))
         self.tile_pub.publish(marker_msg)
 
+    def rotation_matrix(self, theta, axis=[0,0,1]):
+        """
+        Return the rotation matrix associated with counterclockwise rotation about
+        the given axis by theta radians.
+        """
+        axis = np.asarray(axis)
+        axis = axis / math.sqrt(np.dot(axis, axis))
+        a = math.cos(theta / 2.0)
+        b, c, d = -axis * math.sin(theta / 2.0)
+        aa, bb, cc, dd = a * a, b * b, c * c, d * d
+        bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
+        return np.array([[aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
+                         [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
+                         [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc]])
+
     def getCostGridOrigin(self, tile_current, tile_next, actor):
         type = tile_current['type']
 
         if type == 'straight.dae':
-            d = self.distVecFromTile(self.actor.x, self.actor.y, self.tile_current)
-            e = self.getUnitVecFromTheta(self.tile_current['entry_angle'])[:2]
+            d = self.distVecFromTile(actor.x, actor.y, tile_current)
+            e = self.getUnitVecFromTheta(tile_current['entry_angle'])[:2]
             offset = np.dot(d, e)*e
-            cost_grid_origin = [self.tile_current['position'][0]+offset[0], self.tile_current['position'][1]+offset[1], self.tile_next['entry_angle']]
+            cost_grid_origin = [tile_current['position'][0]+offset[0], tile_current['position'][1]+offset[1], tile_next['entry_angle']]
 
         elif type == 'curve_left.dae':
             # tile position in world frame
-            w_P_t = tile_current['position']
+            w_P_t = tile_current['position'][:2]
 
             # duckiebot positon in world frame
             w_P_d = np.array([actor.x, actor.y])
 
             # corner position in tile frame TODO check
-            t_P_c = np.rot90(np.array([-self.tile_size/2, self.tile_size/2]), k=round(w_P_t[2]/math.pi*2))
+            self.rotation_matrix(tile_current['position'][2])
+            t_P_c = np.dot(self.rotation_matrix(tile_current['position'][2]), np.array([-self.tile_size/2, self.tile_size/2, 0]))[:2]
 
             # corner position in world frame
             w_P_c = w_P_t + t_P_c
@@ -275,17 +291,22 @@ class TrajectoryCreator(WorkerBase):
             # get positional cost_grid_origin
             cost_grid_origin = w_P_c + self.tile_size/2 * unit_radius
 
+            # get theta angle of cost_grid and append to
+            theta = self.mapToPositiveAngle(2*(tile_current['entry_angle']-tile_current['position'][2]+3/4*math.pi))
+
+            cost_grid_origin = np.append(cost_grid_origin, [theta])
 
 
         elif type == 'curve_right.dae':
             # tile position in world frame
-            w_P_t = tile_current['position']
+            w_P_t = tile_current['position'][:2]
 
             # duckiebot positon in world frame
             w_P_d = np.array([actor.x, actor.y])
 
             # corner position in tile frame TODO check
-            t_P_c = np.rot90(np.array([-self.tile_size/2, -self.tile_size/2]), k=round(w_P_t[2]/math.pi*2))
+            self.rotation_matrix(tile_current['position'][2])
+            t_P_c = np.dot(self.rotation_matrix(tile_current['position'][2]), np.array([-self.tile_size/2, -self.tile_size/2, 0]))[:2]
 
             # corner position in world frame
             w_P_c = w_P_t + t_P_c
@@ -296,6 +317,11 @@ class TrajectoryCreator(WorkerBase):
 
             # get positional cost_grid_origin
             cost_grid_origin = w_P_c + self.tile_size/2 * unit_radius
+
+            # get theta angle of cost_grid and append to
+            theta = self.mapToPositiveAngle(2*(tile_current['entry_angle']-tile_current['position'][2]+1/4*math.pi))
+
+            cost_grid_origin = np.append(cost_grid_origin, [theta])
 
         else:
             d = self.distVecFromTile(self.actor.x, self.actor.y, self.tile_current)

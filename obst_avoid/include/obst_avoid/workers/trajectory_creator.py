@@ -12,6 +12,7 @@ from obst_avoid.manipulators import CostGridSolver
 from obst_avoid.containers import Obstacle
 from obst_avoid.containers import Trajectory
 from visualization_msgs.msg import MarkerArray, Marker
+from random import *
 
 
 class TrajectoryCreator(WorkerBase):
@@ -212,14 +213,30 @@ class TrajectoryCreator(WorkerBase):
                 next_entry_angle = tile['entry_angle'] + math.pi / 2
 
         elif tile['type'] == '4way.dae':
-            next_entry_angle = tile['entry_angle']
+            next_entry_angle = tile['entry_angle'] + \
+                randint(-1, 1) * math.pi / 2
 
         elif tile['type'] == '3way_left.dae':
-            next_entry_angle = tile['entry_angle']
+            if delta_theta == 0:
+                next_entry_angle = tile['entry_angle'] + \
+                    randint(0, 1) * math.pi / 2
+            if delta_theta == math.pi:
+                next_entry_angle = tile['entry_angle'] + \
+                    randint(-1, 0) * math.pi / 2
+            if delta_theta == math.pi * 3 / 2:
+                next_entry_angle = tile['entry_angle'] + \
+                    (randint(0, 1) - 1.0 / 2) * math.pi
 
         elif tile['type'] == '3way_right.dae':
-            next_entry_angle = tile['entry_angle']
-
+            if delta_theta == 0:
+                next_entry_angle = tile['entry_angle'] + \
+                    randint(-1, 0) * math.pi / 2
+            if delta_theta == math.pi / 2:
+                next_entry_angle = tile['entry_angle'] + \
+                    (randint(0, 1) - 1 / 2) * math.pi
+            if delta_theta == math.pi:
+                next_entry_angle = tile['entry_angle'] + \
+                    randint(0, 1) * math.pi / 2
         else:
             print('unforeseen tile entry angle - could not find next')
 
@@ -283,15 +300,19 @@ class TrajectoryCreator(WorkerBase):
 
     def getCostGridOrigin(self, tile_current, tile_next, actor):
         type = tile_current['type']
+        entry_angle_difference = self.mapToPositiveAngle(
+            tile_next['entry_angle'] - tile_current['entry_angle'])
 
-        if type == 'straight.dae':
+        if entry_angle_difference == 0:  # straight
+
             d = self.distVecFromTile(actor.x, actor.y, tile_current)
             e = self.getUnitVecFromTheta(tile_current['entry_angle'])[:2]
             offset = np.dot(d, e) * e
             cost_grid_origin = [tile_current['position'][0] + offset[0],
                                 tile_current['position'][1] + offset[1], tile_next['entry_angle']]
 
-        elif type == 'curve_left.dae':
+        elif entry_angle_difference == math.pi / 2:  # left curve
+
             # tile position in world frame
             w_P_t = tile_current['position'][:2]
 
@@ -299,8 +320,7 @@ class TrajectoryCreator(WorkerBase):
             w_P_d = np.array([actor.x, actor.y])
 
             # corner position in tile frame
-            self.rotation_matrix(tile_current['position'][2])
-            t_P_c = np.dot(self.rotation_matrix(tile_current['position'][2]), np.array(
+            t_P_c = np.dot(self.rotation_matrix(tile_current['entry_angle']), np.array(
                 [-self.tile_size / 2, self.tile_size / 2, 0]))[:2]
 
             # corner position in world frame
@@ -314,23 +334,14 @@ class TrajectoryCreator(WorkerBase):
             cost_grid_origin = w_P_c + self.tile_size / 2 * unit_radius
 
             # get theta angle of cost_grid
-            theta = math.atan2(unit_radius[1], unit_radius[0])
-            theta_offset = self.mapToPositiveAngle(
-                2 * (tile_current['entry_angle'] - tile_current['position'][2] + 1 / 4 * math.pi))
-
-            # depending on entry direction of curve shift theta the right way
-            delta_theta = tile_current['entry_angle'] - \
-                tile_current['position'][2]
-            delta_theta = self.mapToPositiveAngle(delta_theta)
-            if delta_theta == 0:
-                theta_offset = math.pi / 2
-            elif delta_theta == math.pi * 3 / 2:
-                theta_offset = -math.pi / 2
+            theta = self.mapToPositiveAngle(math.atan2(
+                unit_radius[1], unit_radius[0]) + math.pi / 2)
 
             cost_grid_origin = [cost_grid_origin[0],
-                                cost_grid_origin[1], theta + theta_offset]
+                                cost_grid_origin[1], theta]
 
-        elif type == 'curve_right.dae':
+        elif entry_angle_difference == 3 * math.pi / 2:  # left curve
+
             # tile position in world frame
             w_P_t = tile_current['position'][:2]
 
@@ -338,8 +349,7 @@ class TrajectoryCreator(WorkerBase):
             w_P_d = np.array([actor.x, actor.y])
 
             # corner position in tile frame
-            self.rotation_matrix(tile_current['position'][2])
-            t_P_c = np.dot(self.rotation_matrix(tile_current['position'][2]), np.array(
+            t_P_c = np.dot(self.rotation_matrix(tile_current['entry_angle']), np.array(
                 [-self.tile_size / 2, -self.tile_size / 2, 0]))[:2]
 
             # corner position in world frame
@@ -348,17 +358,16 @@ class TrajectoryCreator(WorkerBase):
             # unit radius vector
             radius = w_P_d - w_P_c
             unit_radius = radius / np.linalg.norm(radius)
-            print('delta_theta of',
-                  tile['type'], tile['entry_angle'], tile['position'][2], delta_theta)
-            print("[trajectory_creator.getCostGridOrigin] not implemented for curve_right.dae. Compare with implementation for curve right")
 
-        else:
-            d = self.distVecFromTile(
-                self.actor.x, self.actor.y, self.tile_current)
-            e = self.getUnitVecFromTheta(self.tile_current['entry_angle'])[:2]
-            offset = np.dot(d, e) * e
-            cost_grid_origin = [self.tile_current['position'][0] + offset[0],
-                                self.tile_current['position'][1] + offset[1], self.tile_next['entry_angle']]
+            # get positional cost_grid_origin
+            cost_grid_origin = w_P_c + self.tile_size / 2 * unit_radius
+
+            # get theta angle of cost_grid
+            theta = self.mapToPositiveAngle(math.atan2(
+                unit_radius[1], unit_radius[0]) - math.pi / 2)
+
+            cost_grid_origin = [cost_grid_origin[0],
+                                cost_grid_origin[1], theta]
 
         return cost_grid_origin
 

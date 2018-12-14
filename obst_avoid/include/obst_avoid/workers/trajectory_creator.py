@@ -82,7 +82,7 @@ class TrajectoryCreator(WorkerBase):
             self.cost_grid_params, self.max_actor_vel)
         self.cost_grid_solver = CostGridSolver()
         self.actor = Obstacle()
-        self.tile_size = 0.585
+        self.tile_size = rospy.get_param('duckietown/tile_size')
         self.actor.x = rospy.get_param('x_pos_set') * self.tile_size
         self.actor.y = rospy.get_param('y_pos_set') * self.tile_size
         self.obstacle_list = []

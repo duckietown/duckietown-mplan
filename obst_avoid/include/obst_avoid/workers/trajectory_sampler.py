@@ -52,6 +52,7 @@ class TrajectorySampler(WorkerBase):
         -------
         none
         """
+        # initial trajector for standing still
         self.trajectory = Trajectory()
         self.trajectory.start_time = rospy.Time.now()
         self.trajectory.duration = 5
@@ -62,14 +63,15 @@ class TrajectorySampler(WorkerBase):
 
         self.actor = Obstacle()
 
-        self.vel_max = 2
-        self.omega_max = 5
-        self.dist_min = 0.05
-        self.target_time = 0.5
-        self.k_vel = 1
-        self.k_P = 4
-        self.k_I = 0
-        self.k_D = 0
+        self.vel_max = rospy.get_param('trajectory_sampler/velocity/max')
+        self.omega_max = rospy.get_param('trajectory_sampler/omega/max')
+        self.dist_min = rospy.get_param('trajectory_sampler/distance/min')
+        self.target_time = rospy.get_param('trajectory_sampler/target_time')
+        self.k_vel = rospy.get_param('trajectory_sampler/k_vel')
+        self.k_P = rospy.get_param('trajectory_sampler/k_p')
+        self.k_I = rospy.get_param('trajectory_sampler/k_i')
+        self.k_D = rospy.get_param('trajectory_sampler/k_d')
+
         self.err = 0
         self.int = 0
 

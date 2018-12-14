@@ -156,7 +156,7 @@ class Obstacle:
         self.x_dot = 0 # TODO
         self.y_dot = 0 # TODO
         list = [msg.scale.x, msg.scale.y, msg.scale.z]
-        self.radius = max(list)/2
+        self.radius = max(list)+0.102347592734337456
         # max(list)/2
         # print(self.radius)
         # print(self)

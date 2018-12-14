@@ -181,9 +181,9 @@ class TrajectoryCreator(WorkerBase):
             next_entry_angle = tile['entry_angle']
 
         elif tile['type']=='curve_left.dae':
-            if delta_theta == math.pi*2/2:
+            if delta_theta == 0:
                 next_entry_angle = tile['entry_angle']+math.pi/2
-            if delta_theta == math.pi/2:
+            if delta_theta == math.pi*3/2:
                 next_entry_angle = tile['entry_angle']-math.pi/2
 
         elif tile['type']=='curve_right.dae':
@@ -202,7 +202,7 @@ class TrajectoryCreator(WorkerBase):
             next_entry_angle = tile['entry_angle']
 
         else:
-            print('kakcki')
+            print('unforeseen tile entry angle - could not find next')
 
         xy = tile['position']+self.getUnitVecFromTheta(next_entry_angle, self.tile_size)
         next_tile = self.findClosestTile(xy[0], xy[1])
@@ -272,13 +272,12 @@ class TrajectoryCreator(WorkerBase):
 
         elif type == 'curve_left.dae':
             # tile position in world frame
-            print(tile_current)
             w_P_t = tile_current['position'][:2]
 
             # duckiebot positon in world frame
             w_P_d = np.array([actor.x, actor.y])
 
-            # corner position in tile frame TODO check
+            # corner position in tile frame
             self.rotation_matrix(tile_current['position'][2])
             t_P_c = np.dot(self.rotation_matrix(tile_current['position'][2]), np.array([-self.tile_size/2, self.tile_size/2, 0]))[:2]
 
@@ -292,15 +291,19 @@ class TrajectoryCreator(WorkerBase):
             # get positional cost_grid_origin
             cost_grid_origin = w_P_c + self.tile_size/2 * unit_radius
 
-            # get theta angle of cost_grid and append to
-            theta = math.atan(unit_radius[1]/unit_radius[0])
+            # get theta angle of cost_grid
+            theta = math.atan2(unit_radius[1], unit_radius[0])
             theta_offset = self.mapToPositiveAngle(2*(tile_current['entry_angle']-tile_current['position'][2]+1/4*math.pi))
-            theta_offset = math.pi/2
-            print("vals", theta, theta_offset)
+
+            # depending on entry direction of curve shift theta the right way
+            delta_theta = tile_current['entry_angle']-tile_current['position'][2]
+            delta_theta = self.mapToPositiveAngle(delta_theta)
+            if delta_theta == 0:
+                theta_offset = math.pi/2
+            elif delta_theta == math.pi*3/2:
+                theta_offset = -math.pi/2
 
             cost_grid_origin = [cost_grid_origin[0], cost_grid_origin[1], theta+theta_offset]
-            print(cost_grid_origin)
-
 
 
         elif type == 'curve_right.dae':
@@ -310,7 +313,7 @@ class TrajectoryCreator(WorkerBase):
             # duckiebot positon in world frame
             w_P_d = np.array([actor.x, actor.y])
 
-            # corner position in tile frame TODO check
+            # corner position in tile frame
             self.rotation_matrix(tile_current['position'][2])
             t_P_c = np.dot(self.rotation_matrix(tile_current['position'][2]), np.array([-self.tile_size/2, -self.tile_size/2, 0]))[:2]
 
@@ -320,17 +323,8 @@ class TrajectoryCreator(WorkerBase):
             # unit radius vector
             radius = w_P_d - w_P_c
             unit_radius = radius / np.linalg.norm(radius)
-
-            # get positional cost_grid_origin
-            cost_grid_origin = w_P_c + self.tile_size/2 * unit_radius
-
-            # get theta angle of cost_grid and append to
-            arg = 2*(tile_current['entry_angle']-tile_current['position'][2]+1/4*math.pi)
-            print("arg", arg)
-            theta = self.mapToPositiveAngle(arg)
-
-            cost_grid_origin = np.append(cost_grid_origin, [theta])
-            print(cost_grid_origin)
+            print('delta_theta of', tile['type'], tile['entry_angle'], tile['position'][2], delta_theta)
+            print("[trajectory_creator.getCostGridOrigin] not implemented for curve_right.dae. Compare with implementation for curve right")
 
         else:
             d = self.distVecFromTile(self.actor.x, self.actor.y, self.tile_current)
@@ -355,13 +349,7 @@ class TrajectoryCreator(WorkerBase):
         none
         """
 
-        print(self.mapToPositiveAngle(0))
-        print(self.mapToPositiveAngle(math.pi/2))
-        print(self.mapToPositiveAngle(math.pi*2/2))
-        print(self.mapToPositiveAngle(math.pi*3/2))
-
         if self.distToTile(self.actor.x, self.actor.y, self.tile_current) > self.distToTile(self.actor.x, self.actor.y, self.tile_next):
-            print('update called on tile shift')
             self.tile_current = self.tile_next
             self.tile_next = self.getNextTile(self.tile_current)
 

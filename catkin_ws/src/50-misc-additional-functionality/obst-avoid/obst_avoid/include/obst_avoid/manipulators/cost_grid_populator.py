@@ -416,9 +416,9 @@ class CostGridPopulator:
 
         # add the cost of every duckiebot obstacle
         for elem in obstacle_list:
-            cost += self.obst_avoid_frac * elem.getCost(x_rwf,y_rwf,t_rwf, elem.x, elem.y, elem.x_dot, elem.y_dot)
+            cost += self.obst_avoid_frac * elem.getCost(x_rwf,y_rwf,t_rwf, elem.x, elem.y, elem.x_dot, elem.y_dot, elem.radius)
 
-        cost += street_obstruction.getCost(x_rwf,y_rwf,t_rwf, street_obstruction.x, street_obstruction.y, street_obstruction.x_dot, street_obstruction.y_dot)
+        cost += street_obstruction.getCost(x_rwf,y_rwf,t_rwf, street_obstruction.x, street_obstruction.y, street_obstruction.x_dot, street_obstruction.y_dot, street_obstruction.radius)
 
         return cost
 

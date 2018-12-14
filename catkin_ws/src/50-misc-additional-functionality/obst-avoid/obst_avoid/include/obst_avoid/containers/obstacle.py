@@ -1,6 +1,8 @@
 import sympy as sp
 import math
 from duckietown_msgs.msg import MovingObject
+from visualization_msgs.msg import Marker
+
 
 class Obstacle:
     """
@@ -134,6 +136,27 @@ class Obstacle:
         self.x_dot = msg.twist.x
         self.y_dot = msg.twist.y
         self.radius = msg.safety_radius
+
+    def fromMarkerMsg(self, msg):
+        """
+        so to say a copy constructor from a msg
+
+        Parameters
+        ----------
+        msg: Marker
+
+        Returns
+        -------
+        none
+        """
+        self.x = msg.pose.position.x
+        self.y = msg.pose.position.y
+        self.theta = 0
+        self.x_dot = 0 # TODO
+        self.y_dot = 0 # TODO
+        list = [msg.scale.x, msg.scale.y, msg.scale.z]
+        self.radius = max(list)
+        # print(self.radius)
 
     def getState(self):
         """

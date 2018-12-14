@@ -11,12 +11,12 @@
   <arg name="theta_set" default="0.0"/>
 
   <arg name="x_start" default="3.0"/>   <!-- Tile-units -->
-  <arg name="y_start" default="-1"/>   <!-- Tile-units -->
+  <arg name="y_start" default="0.15"/>   <!-- Tile-units -->
   <arg name="x_dim" default="0.1"/>
   <arg name="y_dim" default="0.1"/>
   <arg name="z_dim" default="0.1"/>
-  <arg name="x_end" default="3.0"/>
-  <arg name="y_end" default="1"/>
+  <arg name="x_end" default="5.0"/>
+  <arg name="y_end" default="0.15"/>
   <arg name="time" default="20.0"/>
   <arg name="id" default="1"/>
 

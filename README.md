@@ -18,7 +18,7 @@ $ source venv/bin/activate
 ```
 
 
-Clone this repo with the following command. Make sure you are inside the `src` folder of a catkin workspace. If you do not have a catkin workspace setup follow these [instructions](https://github.com/duckietown/duckietown-mplan/wiki/Setting-up-a-catkin-workspace)
+Clone this repo with the following command. Make sure you are inside the `src` folder of a catkin workspace. If you do not have a catkin workspace setup follow these [instructions](https://github.com/duckietown/duckietown-mplan/wiki/Setting-up-a-catkin-workspace).
 ```
 $ git clone https://github.com/duckietown/duckietown-mplan.git
 ```

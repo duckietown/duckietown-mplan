@@ -1,0 +1,14 @@
+version: 2
+workflows:
+  version: 2
+  test:
+    jobs:
+    - test-2.7
+jobs:
+  test-2.7:
+    docker:
+    - image: python:2.7
+    
+    steps:
+    - checkout # check out the code in the project directory
+    - run: echo "pseudo build succeeded" # run the `echo` command

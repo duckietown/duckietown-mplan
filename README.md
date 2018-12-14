@@ -1,8 +1,8 @@
 # obst-avoid
-This contains multiple ROS packages for obstacle avoidance and vualization thereof in Duckietown.
+This contains multiple ROS packages for obstacle avoidance and visualization thereof for Duckietown.
 
 ## Prerequisites
-- Desktop-Full installation of ROS
+- [Desktop-Full installation of ROS](http://wiki.ros.org/kinetic/Installation)
 - [duckietown-world](https://github.com/duckietown/duckietown-world)
 
 ## Installing
@@ -12,24 +12,27 @@ setup virtual environment
 ```
 $ virtualenv -p python2.7 venv
 ```
-source virtual venv
+activate the virtual environment
 ```
 $ source venv/bin/activate
 ```
 
 
-Clone this repo with
+Clone this repo with the following command. Make sure you are inside the `src` folder of a catkin workspace. If you do not have a catkin workspace setup follow these [instructions](https://github.com/duckietown/duckietown-mplan/wiki/Setting-up-a-catkin-workspace)
 ```
-$ git clone https://github.com/lgulich/Software/
+$ git clone https://github.com/duckietown/duckietown-mplan.git
 ```
-Install the additional requirements using
-```
-$ pip install -r Software/catkin_ws/src/50-misc-additional-functionality/obst-avoid/requirements.txt 
-```
-Go to the catkin_ws
+
+Enter the repo
 ```
 $ cd Software/catkin_ws
 ```
+
+Install the additional requirements using
+```
+$ pip install -r requirements.txt 
+```
+
 Load the submodules and build the workspace
 ```
 $ git submodule init
@@ -40,7 +43,7 @@ Run `catkin_make` instead if you don't use `python-catkin-tools`.
 
 Next, source your workspace using
 ```
-$ source devel/setup.bash
+$ source ../devel/setup.bash
 ```
 
 ## Running the obstacle avoidance and visualization

@@ -64,7 +64,8 @@ class TrajectorySampler(WorkerBase):
 
         self.vel_max = 2
         self.omega_max = 5
-        self.target_time = 2
+        self.dist_min = 0.05
+        self.target_time = 0.5
         self.k_vel = 1
         self.k_P = 4
         self.k_I = 0
@@ -129,8 +130,10 @@ class TrajectorySampler(WorkerBase):
         # position, angle, velocity of actor
         x_act, y_act, x_act_dot, y_act_dot = self.actor.getState()
 
+        dist_to_target = math.sqrt((x_set - x_act)**2 + (y_set - y_act)**2)
+
         # velocity needed to reach target positon within target_time
-        vel_set = self.k_vel * math.sqrt((x_set - x_act)**2 + (y_set - y_act)**2) / self.target_time
+        vel_set = self.k_vel * dist_to_target / self.target_time
 
         # # angular error and distance to line between trajectory position and target position
         # if(x_set == x_set_now and y_set == y_set_now):
@@ -178,6 +181,10 @@ class TrajectorySampler(WorkerBase):
         self.int = self.int + err
 
         omega_set = C_P + C_I + C_D
+
+        if dist_to_target < self.dist_min:
+            vel_set = 0
+            omega_set = 0
 
         #publish
         command_msg = dtmsg.Twist2DStamped()  # TODO, add proper message and populate it

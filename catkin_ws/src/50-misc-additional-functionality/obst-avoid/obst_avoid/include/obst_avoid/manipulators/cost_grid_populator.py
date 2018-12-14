@@ -26,9 +26,9 @@ class CostGridPopulator:
         empty
         """
         # initialize cost helper functions
-        self.push_fwd_frac = 0.2
+        self.push_fwd_frac = 1
         self.street_bound_frac = 0.4
-        self.obst_avoid_frac = 0.4
+        self.obst_avoid_frac = 1
         self.init_fixed_fun(cost_grid_params, max_actor_vel)
 
         # create cost_grid object

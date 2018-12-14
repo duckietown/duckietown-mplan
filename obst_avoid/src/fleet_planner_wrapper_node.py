@@ -9,9 +9,9 @@ from visualization_msgs.msg import MarkerArray, Marker
 
 
 # TODO add these variables to rosparam server and read from there
-duckie_radius = 0.2
-actor_id = "duckie-0"
-manual_duckiebot_id = "duckie-1"
+duckie_radius = rospy.get_param('obstacles/duckie_bot/radius')
+actor_duckiebot_id = rospy.get_param('actor_duckiebot_id')
+manual_duckiebot_id = rospy.get_param('manual_duckiebot_id')
 sampler_frequency = 0.1
 actor_omega = 0
 manual_command = 0
@@ -35,7 +35,7 @@ def fleetPlannerCb(msg):
     # if the duckie is our main controllerd duckie publish it to the actor topic
     # else publish to obstacle topic
     for duck in msg.duckie_states:
-        if duck.duckie_id.data == actor_id:
+        if duck.duckie_id.data == actor_duckiebot_id:
             actor_msg.header = msg.header
             actor_msg.name = duck.duckie_id.data
             actor_msg.moving_object.pose.x = duck.pose.x
@@ -81,7 +81,7 @@ def commandCb(msg):
 
     # parse obst_avoid command msg to fleet_planner command msg
     command = fsmsg.DuckieCommand()
-    command.duckie_id.data = actor_id
+    command.duckie_id.data = actor_duckiebot_id
     command.on_rails.data = False
     command.command.linear.x = msg.v
     command.command.linear.y = 0

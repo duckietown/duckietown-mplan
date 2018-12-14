@@ -136,7 +136,7 @@ class TrajectoryCreator(WorkerBase):
         self.parseMapToTileList(data)
 
     def mapToPositiveAngle(self, angle):
-        if angle > 2*math.pi:
+        if angle >= 2*math.pi:
             angle -= 2*math.pi
         elif angle < 0:
             angle += 2*math.pi
@@ -173,6 +173,8 @@ class TrajectoryCreator(WorkerBase):
     def getNextTile(self, tile):
         delta_theta = tile['entry_angle']-tile['position'][2]
         delta_theta = self.mapToPositiveAngle(delta_theta)
+        print('delta_theta of', tile['type'], tile['entry_angle'], tile['position'][2], delta_theta)
+
 
         xy = [0,0,0]
         next_entry_angle = 0
@@ -206,7 +208,7 @@ class TrajectoryCreator(WorkerBase):
 
         xy = tile['position']+self.getUnitVecFromTheta(next_entry_angle, self.tile_size)
         next_tile = self.findClosestTile(xy[0], xy[1])
-        next_tile['entry_angle'] = next_entry_angle
+        next_tile['entry_angle'] =  self.mapToPositiveAngle(next_entry_angle)
         return next_tile
 
     def getMarker(self, marker_id, tile):

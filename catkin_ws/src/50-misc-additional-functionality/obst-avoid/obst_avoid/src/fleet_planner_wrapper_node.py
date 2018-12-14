@@ -91,7 +91,6 @@ def commandCb(msg):
     commands_msg.duckie_commands = [command]
 
     if manual_command != 0:
-        print('called correct')
         manual_duckie_command = fsmsg.DuckieCommand()
         manual_duckie_command.duckie_id.data = manual_duckiebot_id
         manual_duckie_command.on_rails.data = False
@@ -101,7 +100,6 @@ def commandCb(msg):
     fleet_command_pub.publish(commands_msg)
 
 def manualCommandCb(msg):
-    print('called ccc')
     global manual_command
     manual_command = msg
 

@@ -63,10 +63,10 @@ class TrajectorySampler(WorkerBase):
         self.actor = Obstacle()
 
         self.vel_max = 2
-        self.omega_max = 3
+        self.omega_max = 5
         self.target_time = 2
         self.k_vel = 1
-        self.k_P = 2
+        self.k_P = 4
         self.k_I = 0
         self.k_D = 0
         self.err = 0

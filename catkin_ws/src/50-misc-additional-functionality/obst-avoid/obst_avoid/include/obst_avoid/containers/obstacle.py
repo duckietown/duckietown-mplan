@@ -88,6 +88,12 @@ class Obstacle:
         # self.obstacles_fun.subs([(t,10)])
         # sp.plotting.plot3d(self.obstacles_fun, (x, 0, 1.5), (y, -0.2, 0.2), xlim=[-0.1,1.5], ylim=[-0.3,0.3])
 
+    def mapToPositiveAngle(self, angle):
+        if angle >= 2*math.pi:
+            angle -= 2*math.pi
+        elif angle < 0:
+            angle += 2*math.pi
+        return angle
 
     def toMsg(self):
         """
@@ -124,7 +130,7 @@ class Obstacle:
         """
         self.x = msg.pose.x
         self.y = msg.pose.y
-        self.theta = msg.pose.theta
+        self.theta = self.mapToPositiveAngle(msg.pose.theta)
         self.x_dot = msg.twist.x
         self.y_dot = msg.twist.y
         self.radius = msg.safety_radius

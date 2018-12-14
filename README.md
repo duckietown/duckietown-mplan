@@ -1,5 +1,8 @@
 # obst-avoid
 This contains multiple ROS packages for obstacle avoidance and visualization thereof for Duckietown.
+[![CircleCI](https://circleci.com/gh/duckietown/duckietown-mplan.svg?style=shield)](https://circleci.com/gh/duckietown/duckietown-mplan)
+
+[![Coverage Status](https://coveralls.io/repos/github/duckietown/duckietown-mplan/badge.svg?branch=master)](https://coveralls.io/github/duckietown/duckietown-mplan?branch=master18)
 
 ## Prerequisites
 - [Desktop-Full installation of ROS](http://wiki.ros.org/kinetic/Installation)

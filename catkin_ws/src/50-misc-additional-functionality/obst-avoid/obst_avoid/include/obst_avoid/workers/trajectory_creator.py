@@ -11,7 +11,6 @@ from obst_avoid.manipulators import CostGridPopulator
 from obst_avoid.manipulators import CostGridSolver
 from obst_avoid.containers import Obstacle
 from obst_avoid.containers import Trajectory
-
 from visualization_msgs.msg import MarkerArray, Marker
 
 
@@ -85,6 +84,8 @@ class TrajectoryCreator(WorkerBase):
         self.actor.x = rospy.get_param('x_pos_set')*self.tile_size
         self.actor.y = rospy.get_param('y_pos_set')*self.tile_size
         self.obstacle_list = []
+        self.street_obstruction = Obstacle()
+
 
     def initIO(self):
         """
@@ -104,6 +105,9 @@ class TrajectoryCreator(WorkerBase):
 
         self.obstacle_sub = rospy.Subscriber(
             'obst_avoid/obstacles', dtmsg.Obstacles, self.obstacleCb)
+
+        self.street_obstruction_sub = rospy.Subscriber(
+            'obst_avoid/street_obstruction', Marker, self.streetObstructionCb )
 
         self.trajectory_pub = rospy.Publisher(
             'obst_avoid/trajectory', dtmsg.TimedPath, queue_size=10)
@@ -130,6 +134,16 @@ class TrajectoryCreator(WorkerBase):
             new_obstacle.fromMsg(obstacle_msg)
 
             self.obstacle_list.append(new_obstacle)
+
+    def streetObstructionCb(self, data):
+        # self.street_obstruction = []
+
+        self.street_obstruction = Obstacle()
+        self.street_obstruction.fromMarkerMsg(data)
+
+        # self.street_obstruction_list.append(street_obstruction)
+
+        # print('recieved new input')
 
     def mapCb(self, data):
         self.map_sub.unregister()
@@ -364,7 +378,7 @@ class TrajectoryCreator(WorkerBase):
 
 
         # get the filled cost grid
-        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.cost_grid_params, self.max_actor_vel, cost_grid_origin, dist_to_centerline)
+        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.street_obstruction, self.cost_grid_params, self.max_actor_vel, cost_grid_origin, dist_to_centerline)
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.cost_grid_params)

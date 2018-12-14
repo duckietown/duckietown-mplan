@@ -5,6 +5,7 @@ import rospy
 import duckietown_msgs.msg as dtmsg
 import flock_simulator.msg as fsmsg
 from geometry_msgs.msg import Twist
+from visualization_msgs.msg import MarkerArray, Marker
 
 
 #TODO add these variables to rosparam server and read from there
@@ -19,6 +20,8 @@ fleet_command_pub = rospy.Publisher(
         'flock_simulator/commands', fsmsg.FlockCommand, queue_size=10)
 obstacle_pub = rospy.Publisher(
         'obst_avoid/obstacles', dtmsg.Obstacles, queue_size=10)
+street_obstruction_pub = rospy.Publisher(
+        'obst_avoid/street_obstruction', Marker, queue_size=10)
 actor_pub = rospy.Publisher(
         'obst_avoid/actor', dtmsg.Actor, queue_size=10)
 
@@ -103,6 +106,9 @@ def manualCommandCb(msg):
     global manual_command
     manual_command = msg
 
+def streetObstructionCb(msg):
+    street_obstruction_pub.publish(msg)
+
 def main():
     rospy.init_node('fleet_planner_wrapper_node', anonymous=False)
 
@@ -114,6 +120,8 @@ def main():
 
     manual_command_sub = rospy.Subscriber(
             '/obst_avoid/manual_duckiebot_twist', Twist, manualCommandCb)
+    street_obstruction_sub = rospy.Subscriber(
+            'flock_simulator/street_obstruction', Marker, streetObstructionCb )
 
 
     rospy.spin()

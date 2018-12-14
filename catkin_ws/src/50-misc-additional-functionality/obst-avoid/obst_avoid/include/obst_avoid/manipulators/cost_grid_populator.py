@@ -26,9 +26,9 @@ class CostGridPopulator:
         empty
         """
         # initialize cost helper functions
-        self.push_fwd_frac = 0.2
+        self.push_fwd_frac = 1
         self.street_bound_frac = 0.4
-        self.obst_avoid_frac = 0.4
+        self.obst_avoid_frac = 1
         self.init_fixed_fun(cost_grid_params, max_actor_vel)
 
         # create cost_grid object
@@ -327,7 +327,7 @@ class CostGridPopulator:
                             next_nodes.append((mask_x, mask_y, k_n + 1))
             active_nodes = next_nodes
 
-    def populate(self, actor_position, list_of_obstacles, cost_grid_params, max_actor_vel, origin, dist_to_centerline):
+    def populate(self, actor_position, list_of_obstacles, street_obstruction, cost_grid_params, max_actor_vel, origin, dist_to_centerline):
         """
         Create a cost grid and populate it according to the obstacles
 
@@ -336,7 +336,9 @@ class CostGridPopulator:
         actor_position : undefinde position object #TODO
             an object containing the position and speed of acting duckiebot
         list_of_obstacles: obstacle[]
-            a list of obstacle objects known to be around
+            a list of obstacle objects known to be around - other duckiebots
+        street_obstruction: obstacle
+            an obstacle object known to be around - not a duckiebot
         cost_grid_params: dictionary
             a python dictionary containing the size and resolution of the cost
             grid. Entries are 'n_t', 'n_x', 'n_y', 'dt', 'dx', 'dy'
@@ -371,7 +373,7 @@ class CostGridPopulator:
                     t = self.cost_grid.getTPos(i,j,k)
 
                     # calculate cost for node
-                    cost = self.calculateCost(x, y, t, list_of_obstacles, actor_position)
+                    cost = self.calculateCost(x, y, t, list_of_obstacles, street_obstruction, actor_position)
 
                     # set cost of node and world position of node, world position of node is actor position + node position in cost grid frame
                     self.cost_grid.setCost(i, j, k, cost)
@@ -383,7 +385,7 @@ class CostGridPopulator:
         self.cost_grid.populated = True
         return self.cost_grid
 
-    def calculateCost(self, x_df, y_df, t_df, obstacle_list, actor):
+    def calculateCost(self, x_df, y_df, t_df, obstacle_list, street_obstruction, actor):
         """
         return the value of the costfunction at a specific time point
 
@@ -414,7 +416,9 @@ class CostGridPopulator:
 
         # add the cost of every duckiebot obstacle
         for elem in obstacle_list:
-            cost += self.obst_avoid_frac * elem.getCost(x_rwf,y_rwf,t_rwf, elem.x, elem.y, elem.x_dot, elem.y_dot)
+            cost += self.obst_avoid_frac * elem.getCost(x_rwf,y_rwf,t_rwf, elem.x, elem.y, elem.x_dot, elem.y_dot, elem.radius)
+
+        cost += street_obstruction.getCost(x_rwf,y_rwf,t_rwf, street_obstruction.x, street_obstruction.y, street_obstruction.x_dot, street_obstruction.y_dot, street_obstruction.radius)
 
         return cost
 

@@ -1,6 +1,8 @@
 import sympy as sp
 import math
 from duckietown_msgs.msg import MovingObject
+from visualization_msgs.msg import Marker
+
 
 class Obstacle:
     """
@@ -71,16 +73,17 @@ class Obstacle:
         obs_y = sp.Symbol('obs_y')
         obs_x_dot = sp.Symbol('obs_x_dot')
         obs_y_dot = sp.Symbol('obs_y_dot')
+        radius = sp.Symbol('radius')
         t = sp.Symbol('t')
 
         max_cost = 100 # cost at radius = max_cost/2
-        function_degree = 20
+        function_degree = 100
 
         obstacle_cost_fun = sp.Function('obstacles_fun')
-        obstacle_cost_fun = 2*max_cost * 2**(-((((x + t*obs_x_dot - obs_x)**2 + (y + t*obs_y_dot - obs_y)**2)/self.radius**2)**(function_degree*self.radius/2)))
+        obstacle_cost_fun = 2*max_cost * 2**(-((((x + t*obs_x_dot - obs_x)**2 + (y + t*obs_y_dot - obs_y)**2)/radius**2)**(function_degree*radius/2)))
 
 
-        self.getCost = sp.lambdify([x, y, t, obs_x, obs_y, obs_x_dot, obs_y_dot ], obstacle_cost_fun)
+        self.getCost = sp.lambdify([x, y, t, obs_x, obs_y, obs_x_dot, obs_y_dot, radius ], obstacle_cost_fun)
 
         # DEBUG VISUALIZATIONS
         # print "init obstacle fun"
@@ -134,6 +137,31 @@ class Obstacle:
         self.x_dot = msg.twist.x
         self.y_dot = msg.twist.y
         self.radius = msg.safety_radius
+
+    def fromMarkerMsg(self, msg):
+        """
+        so to say a copy constructor from a msg
+
+        Parameters
+        ----------
+        msg: Marker
+
+        Returns
+        -------
+        none
+        """
+        self.x = msg.pose.position.x
+        self.y = msg.pose.position.y
+        self.theta = 0
+        self.x_dot = 0 # TODO
+        self.y_dot = 0 # TODO
+        list = [msg.scale.x, msg.scale.y, msg.scale.z]
+        self.radius = max(list)+0.102347592734337456
+        # max(list)/2
+        # print(self.radius)
+        # print(self)
+        # print(self.radius)
+
 
     def getState(self):
         """

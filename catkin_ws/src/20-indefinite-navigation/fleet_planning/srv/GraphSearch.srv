@@ -1,5 +1,0 @@
-string source_node
-string target_node
----
-string[] actions
-string[] path

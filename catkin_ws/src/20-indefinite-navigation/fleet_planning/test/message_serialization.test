@@ -1,3 +1,0 @@
-<launch>
-    <test test-name="test_message_serialization" pkg="fleet_planning" type="test_message_serialization.py"/>
-</launch>

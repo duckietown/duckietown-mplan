@@ -1,3 +1,0 @@
-description: People entries
-interface: duckieteam.Person 
-default_constructor: duckieteam.PersonV1

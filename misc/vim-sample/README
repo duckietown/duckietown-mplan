@@ -1,5 +1,0 @@
-
-    ~/duckietown/misc/vim-sample/dot-vim .vim
-
-    ln -s ~/duckietown/misc/vim-sample/dot-vimrc .vimrc
-

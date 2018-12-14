@@ -1,3 +1,0 @@
-description: Robot entries
-interface: duckieteam.ScuderiaEntry 
-default_constructor: duckieteam.ScuderiaEntry

@@ -13,7 +13,7 @@ cost_function:
   obstacles:
     frac: 1
     duckie_bot:
-      radius: 0.2
+      radius: 0.3
   push_fwd:
     frac: 1
     stand_cost: 1.0

@@ -9,7 +9,7 @@ from visualization_msgs.msg import MarkerArray, Marker
 
 
 #TODO add these variables to rosparam server and read from there
-duckie_radius = 0.2
+duckie_radius = rospy.get_param('cost_function/obstacles/duckie_bot/radius')
 actor_id = "duckie-0"
 manual_duckiebot_id = "duckie-1"
 sampler_frequency = 0.1

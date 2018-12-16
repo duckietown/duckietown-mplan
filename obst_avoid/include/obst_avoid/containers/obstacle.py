@@ -117,7 +117,7 @@ class Obstacle:
         msg.pose.y = self.y
         msg.twist.x = self.x_dot
         msg.twist.y = self.y_dot
-        msg.safety_radius = self.r
+        msg.safety_radius = self.radius
 
     def fromMsg(self, msg):
         """

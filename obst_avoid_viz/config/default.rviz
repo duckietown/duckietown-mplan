@@ -12,7 +12,7 @@ Panels:
         - /Tiles1/Namespaces1
         - /StreetObstruction1
       Splitter Ratio: 0.405555546
-    Tree Height: 711
+    Tree Height: 362
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -156,25 +156,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 7.72444677
+      Distance: 2.95474243
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 2.93812943
-        Y: 0.924447298
-        Z: -0.42620948
+        X: 0
+        Y: 0
+        Z: 0
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.55979633
-      Target Frame: <Fixed Frame>
+      Pitch: 0.72479707
+      Target Frame: duckie-0
       Value: Orbit (rviz)
-      Yaw: 3.1399591
+      Yaw: 3.75497961
     Saved: ~
 Window Geometry:
   Displays:

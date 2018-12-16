@@ -3,6 +3,7 @@ from obst_avoid.containers import CostGrid
 import math
 import numpy as np
 import sympy as sp
+import rospy
 
 from std_msgs.msg import ColorRGBA
 from geometry_msgs.msg import Point
@@ -26,9 +27,9 @@ class CostGridPopulator:
         empty
         """
         # initialize cost helper functions
-        self.push_fwd_frac = 1
-        self.street_bound_frac = 0.4
-        self.obst_avoid_frac = 1
+        self.push_fwd_frac = rospy.get_param('cost_function/push_fwd/frac')
+        self.street_bound_frac = rospy.get_param('cost_function/street_bound/frac')
+        self.obst_avoid_frac = rospy.get_param('cost_function/obstacles/frac')
         self.init_fixed_fun(cost_grid_params, max_actor_vel)
 
         # create cost_grid object
@@ -66,9 +67,10 @@ class CostGridPopulator:
             dt = cost_grid_params.get('dt')
             n_t = cost_grid_params.get('n_t')
 
-            # TODO - add to parameter file
-            push_fwd_stand_cost = 1.0 # cost for standing still
-            push_fwd_allow_speed_fract = 0.1 # 10% above max speed, only for viz
+            # cost for standing still
+            push_fwd_stand_cost = rospy.get_param('cost_function/push_fwd/stand_cost')
+            # 10% above max speed, only for viz
+            push_fwd_allow_speed_fract = rospy.get_param('cost_function/push_fwd/allow_speed')
 
             # Parameters for cost quintic
             x_opt = dt*n_t* max_actor_vel     # optimal position - max speed for the whole time interval

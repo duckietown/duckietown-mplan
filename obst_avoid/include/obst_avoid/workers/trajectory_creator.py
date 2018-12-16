@@ -72,14 +72,16 @@ class TrajectoryCreator(WorkerBase):
             'dx' : rospy.get_param('cost_grid/delta/x'),
             'dy' : rospy.get_param('cost_grid/delta/y')
         }
+
         self.max_actor_vel = rospy.get_param('velocity/max')
 
         self.cost_grid_populator = CostGridPopulator(self.cost_grid_params, self.max_actor_vel)
         self.cost_grid_solver = CostGridSolver()
         self.actor = Obstacle()
-        self.tile_size = 0.585
+        self.tile_size = rospy.get_param('duckietown/tile_size')
         self.actor.x = rospy.get_param('x_pos_set')*self.tile_size
         self.actor.y = rospy.get_param('y_pos_set')*self.tile_size
+
         self.obstacle_list = []
         self.street_obstruction = Obstacle()
         self.map_manipulator = MapManipulator(self.tile_size)
@@ -133,14 +135,8 @@ class TrajectoryCreator(WorkerBase):
             self.obstacle_list.append(new_obstacle)
 
     def streetObstructionCb(self, data):
-        # self.street_obstruction = []
-
         self.street_obstruction = Obstacle()
         self.street_obstruction.fromMarkerMsg(data)
-
-        # self.street_obstruction_list.append(street_obstruction)
-
-        # print('recieved new input')
 
     def publishTiles(self, tile1, tile2):
         marker_msg = MarkerArray()

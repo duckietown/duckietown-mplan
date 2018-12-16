@@ -76,8 +76,8 @@ class TrajectoryCreator(WorkerBase):
         self.tile_size = rospy.get_param('duckietown/tile_size')
 
         self.actor = Obstacle()
-        self.actor.x = rospy.get_param('x_pos_set') * self.tile_size
-        self.actor.y = rospy.get_param('y_pos_set') * self.tile_size
+        self.actor.x = rospy.get_param('actor-1/x_pos_set') * self.tile_size
+        self.actor.y = rospy.get_param('actor-1/y_pos_set') * self.tile_size
 
         self.obstacle_list = []
         self.map_manipulator = MapManipulator(self.tile_size)

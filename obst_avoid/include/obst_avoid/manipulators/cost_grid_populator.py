@@ -3,6 +3,7 @@ from obst_avoid.containers import CostGrid
 import math
 import numpy as np
 import sympy as sp
+import rospy
 
 from std_msgs.msg import ColorRGBA
 from geometry_msgs.msg import Point
@@ -36,6 +37,9 @@ class CostGridPopulator:
 
         #  fill graph with nodes
         self.fillGraph(cost_grid_params)
+
+        # read in edge weight
+        self.edge_cost_factor = rospy.get_param('cost_grid/edges/edge_cost_factor')
 
 
     def __del__(self):
@@ -438,11 +442,12 @@ class CostGridPopulator:
         -------
         float : the requested cost
         """
+        edge_cost_factor = self.edge_cost_factor; # depends on the order of magnitude of the node cost function
+
         curr_delta_x = self.cost_grid.getXPos(next_node[0], next_node[1], next_node[2])-self.cost_grid.getXPos(curr_node[0], curr_node[1], curr_node[2])
 
         curr_delta_y = self.cost_grid.getYPos(next_node[0], next_node[1], next_node[2])-self.cost_grid.getYPos(curr_node[0], curr_node[1], curr_node[2])
 
-        norm_factor = 0.0; # depends on the order of magnitude of the node cost function
-        distance = norm_factor * math.sqrt(curr_delta_x**2 + curr_delta_y**2)
+        edge_cost = edge_cost_factor * math.sqrt(curr_delta_x**2 + curr_delta_y**2)
 
-        return distance
+        return edge_cost

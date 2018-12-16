@@ -153,7 +153,7 @@ class TrajectorySampler(WorkerBase):
         k = int(round(self.iterator*Ts/self.cost_grid_params.get('dt')))
 
         # if i != self.iterator_bef:
-        print(k)
+        # print(k)
         # print(Ts)
 
         try:

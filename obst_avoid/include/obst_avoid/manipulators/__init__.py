@@ -1,0 +1,3 @@
+# import manipulator objects
+from cost_grid_populator import CostGridPopulator
+from cost_grid_solver import CostGridSolver

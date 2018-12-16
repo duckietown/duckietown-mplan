@@ -1,0 +1,60 @@
+<launch>
+
+  <rosparam file="$(find obst_avoid)/config/obst_avoid_params.yaml" command="load"/>
+
+  <arg name="rviz_config"
+      default="$(find obst_avoid_viz)/config/default.rviz"/>
+  <arg name="map_name" default="robotarium1"/>
+  <arg name="n_duckies" default="6"/>
+  <arg name="x_pos_set" default="2.5"/>   <!-- Tile-units -->
+  <arg name="y_pos_set" default="0.25"/>   <!-- Tile-units -->
+  <arg name="theta_set" default="0.0"/>
+
+  <arg name="x_start" default="3.0"/>   <!-- Tile-units -->
+  <arg name="y_start" default="0.15"/>   <!-- Tile-units -->
+  <arg name="x_dim" default="0.1"/>
+  <arg name="y_dim" default="0.1"/>
+  <arg name="z_dim" default="0.1"/>
+  <arg name="x_end" default="3.0"/>
+  <arg name="y_end" default="0.15"/>
+  <arg name="time" default="20.0"/>
+  <arg name="id" default="1"/>
+
+  <!-- OBSTACLE AVOIDANCE NODES -->
+  <node name="trajectory_creator_node" pkg="obst_avoid" type="trajectory_creator_node.py" output="screen"/>
+    <param name="x_pos_set" value="$(arg x_pos_set)"/>
+    <param name="y_pos_set" value="$(arg y_pos_set)"/>
+    <param name="theta_set" value="$(arg theta_set)"/>
+  <node name="trajectory_sampler_node" pkg="obst_avoid" type="trajectory_sampler_node.py" output="screen"/>
+  <!-- <node name="example_publisher_node" pkg="obst_avoid" type="example_publisher_node.py" output="screen"/> -->
+
+
+  <!-- SIMULATION NODES -->
+  <node pkg="flock_simulator" name="flock_simulator_node" type="flock_simulator_node.py" output="screen">
+      <param name="map_name" value="$(arg map_name)"/>
+      <param name="n_duckies" value="$(arg n_duckies)"/>
+      <param name="x_pos_set" value="$(arg x_pos_set)"/>
+      <param name="y_pos_set" value="$(arg y_pos_set)"/>
+      <param name="theta_set" value="$(arg theta_set)"/>
+      <param name="x_start" value="$(arg x_start)"/>
+      <param name="y_start" value="$(arg y_start)"/>
+      <param name="x_dim" value="$(arg x_dim)"/>
+      <param name="y_dim" value="$(arg y_dim)"/>
+      <param name="z_dim" value="$(arg z_dim)"/>
+      <param name="x_end" value="$(arg x_end)"/>
+      <param name="y_end" value="$(arg y_end)"/>
+      <param name="time" value="$(arg time)"/>
+      <param name="id" value="$(arg id)"/>
+  </node>
+  <node name="fleet_planner_wrapper_node" pkg="obst_avoid" type="fleet_planner_wrapper_node.py" output="screen"/>
+
+  <!-- VISUALIZATION NODES -->
+  <include file="$(find flock_simulator)/launch/visualization.launch">
+    <arg name="map_name" value="$(arg map_name)"/>
+    <arg name="rviz_config" value="$(arg rviz_config)"/>
+  </include>
+  <node name="duck_viz" pkg="obst_avoid_viz" type="duck_viz_node" output="screen"/>
+  <node name="path_viz" pkg="obst_avoid_viz" type="path_viz_node.py" output="screen"/>
+
+
+</launch>

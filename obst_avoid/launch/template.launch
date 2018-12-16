@@ -1,5 +1,0 @@
-<launch>
-
-  <node name="worker_node_template" pkg="obst_avoid" type="worker_node_template.py" output="screen"/>
-
-</launch>

@@ -1,9 +1,0 @@
-<launch>
-<!-- obst avoid nodes -->
-  <node name="trajectory_creator_node" pkg="obst_avoid" type="trajectory_creator_node.py" output="screen"/>
-  <node name="trajectory_sampler_node" pkg="obst_avoid" type="trajectory_sampler_node.py" output="screen"/>
-
-  <!-- simulation nodes -->
-  <node name="example_publisher_node" pkg="obst_avoid" type="example_publisher_node.py" output="screen"/>
-
-</launch>

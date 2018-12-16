@@ -1,7 +1,7 @@
 import numpy as np
 import networkx as nx
 from visualization_msgs.msg import MarkerArray, Marker
-
+import rospy
 
 class CostGrid:
     """
@@ -40,6 +40,9 @@ class CostGrid:
         # initialize theoretical start and end node (data values unused)
         self.costs.add_node('S', x_pos=0.0, x_world=0.0, y_pos=0.0, y_world=0.0, t_pos=0.0, node_weight=0.0)
         self.costs.add_node('E', x_pos=0.0, x_world=0.0, y_pos=0.0, y_world=0.0, t_pos=0.0, node_weight=0.0)
+
+        # define sampler frequency
+        self.freq_sampler = rospy.get_param('/trajectory_sampler_node/frequency')
 
     def __del__(self):
         pass
@@ -298,7 +301,6 @@ class CostGrid:
         # iterate over all grids
         # TODO make time dependent and add to sampler to update most relevant layer - currently only the first time layer is implemented...
         # for k in range(n_t):
-        k = 0
         for k in range(n_t):
             for i in range(n_x):
                 for j in range(n_y):
@@ -321,7 +323,8 @@ class CostGrid:
                     marker.color.b = 0.1
                     marker.pose.position.x = self.getXWorld(i,j,k)
                     marker.pose.position.y = self.getYWorld(i,j,k)
-                    marker.pose.position.z = self.getTPos(i,j,k) + cost / 2
+                    marker.pose.position.z = cost / 2
+                    marker.lifetime = rospy.Duration(1.0 / self.freq_sampler+0.1)
 
                     marker_array_msg.markers.append(marker)
 

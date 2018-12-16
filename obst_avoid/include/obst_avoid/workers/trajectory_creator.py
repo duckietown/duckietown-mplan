@@ -109,13 +109,13 @@ class TrajectoryCreator(WorkerBase):
             'obst_avoid/street_obstruction', Marker, self.streetObstructionCb)
 
         self.trajectory_pub = rospy.Publisher(
-            'obst_avoid/trajectory', oamsg.TimedPath, queue_size=10)
+            'obst_avoid/trajectory', oamsg.TimedPath, queue_size=1)
 
         self.cost_grid_viz_internal_pub = rospy.Publisher(
-            'obst_avoid/cost_grid_internal', MarkerArray, queue_size=10)
+            'obst_avoid/cost_grid_internal', MarkerArray, queue_size=1)
 
         self.tile_pub = rospy.Publisher(
-            'obst_avoid/tiles', MarkerArray, queue_size=10)
+            'obst_avoid/tiles', MarkerArray, queue_size=1)
 
         # parse map to tile list and initiate tiles
         map = rospy.wait_for_message("duckietown_map", MarkerArray)

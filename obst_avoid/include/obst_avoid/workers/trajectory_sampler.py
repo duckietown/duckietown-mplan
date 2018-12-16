@@ -86,7 +86,6 @@ class TrajectorySampler(WorkerBase):
         self.int = 0
 
         self.iterator = 0
-        self.iterator_bef = 0
 
     def initIO(self):
         """
@@ -111,10 +110,10 @@ class TrajectorySampler(WorkerBase):
             'obst_avoid/cost_grid_internal', MarkerArray, self.markerCb)
 
         self.command_pub = rospy.Publisher(
-            'obst_avoid/twist', oamsg.Twist2DStamped, queue_size=10)
+            'obst_avoid/twist', oamsg.Twist2DStamped, queue_size=1)
 
         self.cost_grid_viz_pub = rospy.Publisher(
-            'obst_avoid/cost_grid', MarkerArray, queue_size=10)
+            'obst_avoid/cost_grid', MarkerArray, queue_size=1)
 
         # wait until first trajectory is published from trajectory creator
         rospy.wait_for_message("obst_avoid/trajectory", oamsg.TimedPath)
@@ -124,6 +123,8 @@ class TrajectorySampler(WorkerBase):
 
     def markerCb(self, data):
         self.cost_grid_marker = data
+        # mark that new trajectory has been calculated
+        self.iterator = 0
 
     def actorCb(self, data):
         self.actor.fromMsg(data.moving_object)
@@ -148,14 +149,17 @@ class TrajectorySampler(WorkerBase):
         # publish marker array for viz
         marker_array_length = self.cost_grid_params.get('n_x')*self.cost_grid_params.get('n_y')
 
-        self.iterator = (self.iterator + 1)%self.cost_grid_params.get('n_t')
-        i = int(round(self.iterator*Ts/self.cost_grid_params.get('dt')))
-        if i != self.iterator_bef:
-            try:
-                self.cost_grid_viz_pub.publish(self.cost_grid_marker.markers[i*marker_array_length:(i+1)*marker_array_length])
-                self.iterator_bef = i
-            except:
-                pass
+        self.iterator = (self.iterator + 1)%int(round(self.cost_grid_params.get('n_t')*self.cost_grid_params.get('dt')/Ts))
+        k = int(round(self.iterator*Ts/self.cost_grid_params.get('dt')))
+
+        # if i != self.iterator_bef:
+        print(k)
+        # print(Ts)
+
+        try:
+            self.cost_grid_viz_pub.publish(self.cost_grid_marker.markers[k*marker_array_length:(k+1)*marker_array_length])
+        except:
+            pass
 
         # target position on trajectory to be reached after target_time
         x_set, y_set = self.trajectory.getPositionFromTimePoint(

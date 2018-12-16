@@ -1,4 +1,10 @@
 
+trajectory_creator_node:
+  frequency: 10.0
+
+trajectory_sampler_node:
+  frequency: 10.0
+
 cost_grid:
   depth:
     time: 12 # discrete time steps

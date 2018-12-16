@@ -15,9 +15,9 @@
   <arg name="x_dim" default="0.1"/>
   <arg name="y_dim" default="0.1"/>
   <arg name="z_dim" default="0.1"/>
-  <arg name="x_end" default="3.0"/>
+  <arg name="x_end" default="5.0"/>
   <arg name="y_end" default="0.15"/>
-  <arg name="time" default="20.0"/>
+  <arg name="time" default="25.0"/>
   <arg name="id" default="1"/>
 
   <!-- OBSTACLE AVOIDANCE NODES -->

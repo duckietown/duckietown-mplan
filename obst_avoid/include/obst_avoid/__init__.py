@@ -6,6 +6,7 @@ from containers.trajectory import Trajectory
 # import manipulator objects
 from manipulators.cost_grid_populator import CostGridPopulator
 from manipulators.cost_grid_solver import CostGridSolver
+from manipulators.map_manipulator import MapManipulator
 
 # import worker objects
 from workers.worker_base import WorkerBase

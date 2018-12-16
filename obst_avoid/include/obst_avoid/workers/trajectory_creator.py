@@ -111,8 +111,8 @@ class TrajectoryCreator(WorkerBase):
         self.trajectory_pub = rospy.Publisher(
             'obst_avoid/trajectory', oamsg.TimedPath, queue_size=10)
 
-        self.cost_grid_viz_pub = rospy.Publisher(
-            'obst_avoid/cost_grid', MarkerArray, queue_size=10)
+        self.cost_grid_viz_internal_pub = rospy.Publisher(
+            'obst_avoid/cost_grid_internal', MarkerArray, queue_size=10)
 
         self.tile_pub = rospy.Publisher(
             'obst_avoid/tiles', MarkerArray, queue_size=10)
@@ -191,7 +191,7 @@ class TrajectoryCreator(WorkerBase):
 
         # publish cost_grid msg
         cost_grid_marker = cost_grid.toVizMsg(self.cost_grid_params)
-        self.cost_grid_viz_pub.publish(cost_grid_marker)
+        self.cost_grid_viz_internal_pub.publish(cost_grid_marker)
 
         self.publishTiles(self.tile_current, self.tile_next)
 

@@ -329,7 +329,7 @@ class CostGridPopulator:
                             next_nodes.append((mask_x, mask_y, k_n + 1))
             active_nodes = next_nodes
 
-    def populate(self, actor_position, list_of_obstacles, street_obstruction, cost_grid_params, max_actor_vel, origin, dist_to_centerline):
+    def populate(self, actor_position, list_of_obstacles, street_obstructions, cost_grid_params, max_actor_vel, origin, dist_to_centerline):
         """
         Create a cost grid and populate it according to the obstacles
 
@@ -339,7 +339,7 @@ class CostGridPopulator:
             an object containing the position and speed of acting duckiebot
         list_of_obstacles: obstacle[]
             a list of obstacle objects known to be around - other duckiebots
-        street_obstruction: obstacle
+        street_obstructions: obstacle list
             an obstacle object known to be around - not a duckiebot
         cost_grid_params: dictionary
             a python dictionary containing the size and resolution of the cost
@@ -375,7 +375,7 @@ class CostGridPopulator:
                     t = self.cost_grid.getTPos(i,j,k)
 
                     # calculate cost for node
-                    cost = self.calculateCost(x, y, t, list_of_obstacles, street_obstruction, actor_position)
+                    cost = self.calculateCost(x, y, t, list_of_obstacles, street_obstructions, actor_position)
 
                     # set cost of node and world position of node, world position of node is actor position + node position in cost grid frame
                     self.cost_grid.setCost(i, j, k, cost)
@@ -387,7 +387,7 @@ class CostGridPopulator:
         self.cost_grid.populated = True
         return self.cost_grid
 
-    def calculateCost(self, x_df, y_df, t_df, obstacle_list, street_obstruction, actor):
+    def calculateCost(self, x_df, y_df, t_df, obstacle_list, street_obstructions, actor):
         """
         return the value of the costfunction at a specific time point
 
@@ -420,7 +420,9 @@ class CostGridPopulator:
         for elem in obstacle_list:
             cost += self.obst_avoid_frac * elem.getCost(x_rwf,y_rwf,t_rwf, elem.x, elem.y, elem.x_dot, elem.y_dot, elem.radius)
 
-        cost += street_obstruction.getCost(x_rwf,y_rwf,t_rwf, street_obstruction.x, street_obstruction.y, street_obstruction.x_dot, street_obstruction.y_dot, street_obstruction.radius)
+        # add the cost of very street obstruction
+        for elem in street_obstructions:
+            cost += elem.getCost(x_rwf,y_rwf,t_rwf, elem.x, elem.y, elem.x_dot, elem.y_dot, elem.radius)
 
         return cost
 

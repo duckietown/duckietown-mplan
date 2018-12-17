@@ -79,11 +79,14 @@ class TrajectoryCreator(WorkerBase):
         self.cost_grid_solver = CostGridSolver()
         self.actor = Obstacle()
         self.tile_size = rospy.get_param('duckietown/tile_size')
-        self.actor.x = rospy.get_param('x_pos_set')*self.tile_size
-        self.actor.y = rospy.get_param('y_pos_set')*self.tile_size
 
+        # TODO add here namespace for multiple actors
+        self.actor.x = rospy.get_param('actor-0/x_pos_set')*self.tile_size
+        self.actor.y = rospy.get_param('actor-0/y_pos_set')*self.tile_size
+
+        self.num_obstructions = rospy.get_param('num_obst') + rospy.get_param('num_obst_rand')
         self.obstacle_list = []
-        self.street_obstruction = Obstacle()
+        self.street_obstructions = []
         self.map_manipulator = MapManipulator(self.tile_size)
 
     def initIO(self):
@@ -106,7 +109,7 @@ class TrajectoryCreator(WorkerBase):
             'obst_avoid/obstacles', oamsg.Obstacles, self.obstacleCb)
 
         self.street_obstruction_sub = rospy.Subscriber(
-            'obst_avoid/street_obstruction', Marker, self.streetObstructionCb )
+            'flock_simulator/street_obstructions', MarkerArray, self.streetObstructionCb)
 
         self.trajectory_pub = rospy.Publisher(
             'obst_avoid/trajectory', oamsg.TimedPath, queue_size=10)
@@ -135,8 +138,12 @@ class TrajectoryCreator(WorkerBase):
             self.obstacle_list.append(new_obstacle)
 
     def streetObstructionCb(self, data):
-        self.street_obstruction = Obstacle()
-        self.street_obstruction.fromMarkerMsg(data)
+        self.street_obstructions = []
+
+        for i in range(0, self.num_obstructions):
+            street_obstruction = Obstacle()
+            street_obstruction.fromMarkerMsg(data.markers[i])
+            self.street_obstructions.append(street_obstruction)
 
     def publishTiles(self, tile1, tile2):
         marker_msg = MarkerArray()
@@ -168,7 +175,7 @@ class TrajectoryCreator(WorkerBase):
         dist_to_centerline = self.map_manipulator.getDistToCenterline(self.tile_current, self.actor.x, self.actor.y)
 
         # get the filled cost grid
-        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.street_obstruction, self.cost_grid_params, self.max_actor_vel, cost_grid_origin, dist_to_centerline)
+        cost_grid = self.cost_grid_populator.populate(self.actor, self.obstacle_list, self.street_obstructions, self.cost_grid_params, self.max_actor_vel, cost_grid_origin, dist_to_centerline)
 
         # solve the cost grid for a trajectory
         trajectory = self.cost_grid_solver.solve(cost_grid, self.cost_grid_params)

@@ -1,4 +1,4 @@
-
+# PIPELINE PARAMETER
 cost_grid:
   depth:
     time: 6 # discrete time steps

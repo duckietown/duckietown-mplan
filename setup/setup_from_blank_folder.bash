@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# use this command to source in this file: ". ./setup.bash"
+# copy this file in a folder in which you want all the demo stuff for mplan
+# use this command to do the setup: ". ./setup_from_blank_folder.bash"
 
 # prerequesits
 # - ssh key for github
@@ -60,4 +61,4 @@ catkin build
 source devel/setup.bash
 
 # launch default demo
-roslaunch obst_avoid obst_avoid_withviz_demo.launch demo_num:=1 
+roslaunch obst_avoid obst_avoid_withviz_demo.launch demo_num:=5

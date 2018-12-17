@@ -35,7 +35,7 @@ void DuckViz::duckieBotSubCb(const flock_simulator::FlockState &msg) {
     marker.mesh_use_embedded_materials = true;
     marker.pose.position.x = msg.duckie_states[i].pose.x;
     marker.pose.position.y = msg.duckie_states[i].pose.y;
-    marker.pose.position.z = 0.05;
+    marker.pose.position.z = 0;
 
     // convert the theta angle to a quaternion
     tf2::Quaternion q;

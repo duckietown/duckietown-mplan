@@ -17,9 +17,9 @@ obst_rand:
 obst-0:
   id: 0
   x_start: 3.0
-  x_end: 3.0
-  y_start: 0.1
-  y_end: 0.1
+  x_end: 6.0
+  y_start: 0.15
+  y_end: 0.15
   x_dim: 0.1
   y_dim: 0.1
   z_dim: 0.1

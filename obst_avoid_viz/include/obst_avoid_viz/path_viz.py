@@ -134,7 +134,7 @@ class PathViz(WorkerBase):
         marker_msg.action = Marker.ADD;
         marker_msg.pose.position.x = x
         marker_msg.pose.position.y = y
-        marker_msg.pose.position.z = 0.2;
+        marker_msg.pose.position.z = 0.1;
         marker_msg.pose.orientation.x = 0
         marker_msg.pose.orientation.y = 0
         marker_msg.pose.orientation.z = 0

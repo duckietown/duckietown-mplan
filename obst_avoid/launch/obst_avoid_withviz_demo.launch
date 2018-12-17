@@ -1,20 +1,20 @@
 <launch>
 
+  <arg name="n_duckies" default="2"/>
+
   <!-- choose the specific demo you want to see -->
-  <arg name="demo_num" default="1"/>
+  <arg name="demo_num" default="5"/>
   <!-- 1 = dynamic passing of a moving object-->
   <!-- 2 = passing of a static object with a dynamic object on the other sode of the street -->
   <!-- 3 = blocked road -->
   <!-- 4 = street passing duckie -->
   <!-- 5 = multiple obstacles and curves -->
-
   <rosparam file="$(find obst_avoid)/config/demos/$(arg demo_num)/obst_avoid_params.yaml" command="load"/>
   <rosparam file="$(find obst_avoid)/config/demos/$(arg demo_num)/obst_avoid_objects.yaml" command="load"/>
 
   <arg name="rviz_config"
       default="$(find obst_avoid)/config/demos/$(arg demo_num)/$(arg demo_num).rviz"/>
   <arg name="map_name" default="robotarium1"/>
-  <arg name="n_duckies" default="2"/>
 
   <!-- OBSTACLE AVOIDANCE NODES -->
   <node name="trajectory_creator_node" pkg="obst_avoid" type="trajectory_creator_node.py" output="screen"/>

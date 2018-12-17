@@ -10,7 +10,7 @@ Panels:
         - /TargetPosition1/Namespaces1
         - /Tiles1/Namespaces1
       Splitter Ratio: 0.405555546
-    Tree Height: 341
+    Tree Height: 1728
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -71,7 +71,7 @@ Visualization Manager:
       Marker Topic: /obst_avoid_viz/duckie_markers
       Name: DuckieBots
       Namespaces:
-        {}
+        obst_avoid_viz: true
       Queue Size: 100
       Value: true
     - Alpha: 2
@@ -126,7 +126,7 @@ Visualization Manager:
       Marker Topic: /flock_simulator/street_obstructions
       Name: Obstructions
       Namespaces:
-        {}
+        street_obstruction: true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -154,25 +154,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.2737484
+      Distance: 4.52995872
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -1.79604506
-        Y: 0.239155471
-        Z: -0.981300056
+        X: -0.229750186
+        Y: 2.25525379
+        Z: -1.90345967
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.39500016
+      Pitch: 0.690000176
       Target Frame: duckie-0
       Value: Orbit (rviz)
-      Yaw: 0.0140690804
+      Yaw: 4.73225403
     Saved: ~
 Window Geometry:
   Displays:

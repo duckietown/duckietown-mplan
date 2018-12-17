@@ -16,6 +16,8 @@ class MapManipulator:
 
     def __init__(self, tile_size):
         self.tile_size = tile_size
+        self.always_go_straight = rospy.get_param('always_go_straight')
+
 
     def __del__(self):
         pass
@@ -81,15 +83,15 @@ class MapManipulator:
                 next_entry_angle = tile['entry_angle']+math.pi/2
 
         elif tile['type']=='4way.dae':
-            next_entry_angle = tile['entry_angle'] + random.randint(-1,1)*math.pi/2*0
+            next_entry_angle = tile['entry_angle'] + random.randint(-1,1)*math.pi/2*int(self.always_go_straight)
 
         elif tile['type']=='3way_left.dae':
             if delta_theta == 0:
-                next_entry_angle = tile['entry_angle'] + random.randint(0,1)*math.pi/2*0
+                next_entry_angle = tile['entry_angle'] + random.randint(0,1)*math.pi/2*int(self.always_go_straight)
             if delta_theta == math.pi:
-                next_entry_angle = tile['entry_angle'] + random.randint(-1,0)*math.pi/2*0
+                next_entry_angle = tile['entry_angle'] + random.randint(-1,0)*math.pi/2*int(self.always_go_straight)
             if delta_theta == math.pi*3/2:
-                next_entry_angle = tile['entry_angle'] + (random.randint(0,1)-1.0/2)*math.pi*0
+                next_entry_angle = tile['entry_angle'] + (random.randint(0,1)-1.0/2)*math.pi*int(self.always_go_straight)
 
         elif tile['type']=='3way_right.dae':
             if delta_theta == 0:

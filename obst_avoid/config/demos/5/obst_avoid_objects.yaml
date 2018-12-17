@@ -1,7 +1,7 @@
 # SIMULATION ENVIRONMENT PARAMETERS
 
 num_actors: 1 # int
-num_obst: 6 # int
+num_obst: 3 # int
 num_obst_rand: 0 # int
 
 actor-0:
@@ -38,46 +38,11 @@ obst-1:
 
 obst-2:
   id: 2
-  x_start: 0.5
-  x_end: 0.5
-  y_start: 10.0
-  y_end: 0.1
-  x_dim: 0.1
-  y_dim: 0.1
-  z_dim: 0.1
-  time: 24.0
-
-obst-3:
-  id: 3
   x_start: 6.0
-  x_end: 0.0
-  y_start: 2.0
-  y_end: 2.0
-  x_dim: 0.1
-  y_dim: 0.1
-  z_dim: 0.1
-  time: 23.0
-
-
-obst-4:
-  id: 4
-  x_start: 5.0
   x_end: 5.0
-  y_start: 1.0
-  y_end: 5.0
+  y_start: 0.8
+  y_end: 0.8
   x_dim: 0.1
   y_dim: 0.1
   z_dim: 0.1
-  time: 23.0
-
-
-obst-5:
-  id: 5
-  x_start: 3.0
-  x_end: 3.0
-  y_start: 0.5
-  y_end: 8.0
-  x_dim: 0.1
-  y_dim: 0.1
-  z_dim: 0.1
-  time: 23.0
+  time: 8.0

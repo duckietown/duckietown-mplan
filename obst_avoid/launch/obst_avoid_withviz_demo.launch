@@ -3,6 +3,8 @@
   <!-- choose the specific demo you want to see -->
   <arg name="demo_num" default="1"/>
   <!-- 1 = one object in the middle of the road -->
+  <!-- 1 = one object in the middle of the road -->
+  <!-- 1 = one object in the middle of the road -->
 
   <rosparam file="$(find obst_avoid)/config/demos/$(arg demo_num)/obst_avoid_params.yaml" command="load"/>
   <rosparam file="$(find obst_avoid)/config/demos/$(arg demo_num)/obst_avoid_objects.yaml" command="load"/>

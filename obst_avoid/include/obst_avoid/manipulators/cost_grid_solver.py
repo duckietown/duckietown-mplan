@@ -2,6 +2,7 @@ import rospy
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 import obst_avoid_msgs.msg as oamsg
 
@@ -13,9 +14,12 @@ class CostGridSolver:
     """Populates the cost grid from the existing objects"""
 
     def __init__(self):
-        pass
+        self.time_avg = 0.0
+        self.iterator = 0
+        # self.file  = open("times.txt", "w")
 
     def __del__(self):
+        # self.file.close()
         pass
 
     def solve(self, cost_grid, cost_grid_params):
@@ -47,7 +51,19 @@ class CostGridSolver:
 
         # solve the SP problem and print solution for verification
         # print(cost_grid.costs.edges())
+        start = time.time()
+
         path = nx.dijkstra_path(cost_grid.costs, 'S', 'E', weight_func)
+
+        end = time.time()
+        diff = end - start
+        self.time_avg = (self.time_avg*self.iterator + diff)/(self.iterator + 1)
+        # print("\niter: " + str(self.iterator))
+        # print("now: " + str(diff))
+        # print("avg: " + str(self.time_avg))
+        print(diff)
+        self.iterator = self.iterator + 1
+        # self.file.write(str(diff))
 
         # convert path object
         path_tf = []
